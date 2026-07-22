@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* ─── Neural Core Design Tokens ─────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --nc-bg-base:     #080b12;
+  --nc-bg-surface:  #0d1117;
+  --nc-bg-elevated: #161b27;
+  --nc-bg-hover:    #1e2436;
+
+  /* Accent */
+  --nc-accent:      #7c6af7;
+  --nc-accent-dim:  #5b4fd4;
+  --nc-accent-glow: rgba(124, 106, 247, 0.22);
+  --nc-accent-text: #a89cfa;
+
+  /* Borders */
+  --nc-border:      rgba(255, 255, 255, 0.06);
+  --nc-border-accent: rgba(124, 106, 247, 0.35);
+
+  /* Text */
+  --nc-text-primary: #e2e8f0;
+  --nc-text-secondary: #94a3b8;
+  --nc-text-muted:  #4a5568;
+
+  /* Sidebar */
+  --sidebar-width-collapsed: 4rem;
+  --sidebar-width-expanded:  15rem;
+
+  /* Navbar */
+  --navbar-height: 3.75rem;
+
+  /* Transitions */
+  --nc-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: var(--nc-bg-base);
+  color: var(--nc-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 106, 247, 0.3);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 106, 247, 0.55);
+}
+
+/* ─── Tailwind theme bridge ──────────────────────────────────────── */
+@theme inline {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --color-background: var(--nc-bg-base);
+  --color-foreground: var(--nc-text-primary);
+}
