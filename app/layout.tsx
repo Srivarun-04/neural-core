@@ -22,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full dark`}>
-      <body className="h-full antialiased">
+    <html lang="en" className={`${inter.variable} h-full dark`} suppressHydrationWarning>
+      <body className="h-full antialiased" suppressHydrationWarning>
         <DashboardShell>{children}</DashboardShell>
       </body>
     </html>

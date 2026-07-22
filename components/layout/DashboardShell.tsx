@@ -8,7 +8,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   return (
-    <div className="flex h-full" style={{ background: "var(--nc-bg-base)" }}>
+    <div className="flex h-full" style={{ background: "var(--nc-bg-base)" }} suppressHydrationWarning>
       {/* Fixed sidebar */}
       <Sidebar />
 
@@ -16,6 +16,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <div
         className="flex flex-col flex-1 min-h-0 transition-all duration-300"
         style={{ marginLeft: "var(--sidebar-width-collapsed)" }}
+        suppressHydrationWarning
       >
         {/* Fixed top navbar */}
         <Navbar />

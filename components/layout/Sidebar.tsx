@@ -63,16 +63,16 @@ export function Sidebar() {
         </nav>
 
         {/* Divider */}
-        <div
-          className="mx-3 mb-1"
+        <hr
+          className="mx-3 mb-1 border-0"
           style={{ height: "1px", background: "var(--nc-border)" }}
           aria-hidden="true"
         />
 
         {/* Settings pinned at bottom */}
-        <div className="px-2 py-3 flex-shrink-0">
+        <footer className="px-2 py-3 flex-shrink-0">
           <NavItem item={settingsItem} collapsed={collapsed} />
-        </div>
+        </footer>
       </aside>
 
       {/* Mobile overlay */}
