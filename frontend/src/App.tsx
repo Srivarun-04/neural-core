@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { Navbar } from './components/Header/Navbar';
 import { ChatArea } from './components/Chat/ChatArea';
+import { KnowledgeBase } from './components/KnowledgeBase/KnowledgeBase';
 import { useChat } from './hooks/useChat';
 import { Menu, Globe, AlertCircle, X } from 'lucide-react';
 import { StorageUtil } from './utils/storage';
@@ -20,6 +21,7 @@ function App() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<'chat' | 'knowledge'>('chat');
   const [backendUrl, setBackendUrl] = useState(StorageUtil.getBackendUrl() || 'http://localhost:8000');
   const [status, setStatus] = useState<'connected' | 'disconnected'>('disconnected');
 
@@ -65,10 +67,14 @@ function App() {
         activeId={activeId}
         onSelectChat={(id) => {
           selectChat(id);
-          setSidebarOpen(false); // Close sidebar on mobile
+          setCurrentView('chat');
+          setSidebarOpen(false);
         }}
         onDeleteChat={deleteChat}
-        onCreateNewChat={createNewChat}
+        onCreateNewChat={() => {
+          createNewChat();
+          setCurrentView('chat');
+        }}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
@@ -90,17 +96,23 @@ function App() {
               backendUrl={backendUrl} 
               onSettingsClick={() => setSettingsOpen(true)} 
               status={status === 'connected' ? 'connected' : 'disconnected'}
+              currentView={currentView}
+              onViewChange={(view) => setCurrentView(view)}
             />
           </div>
         </div>
 
-        {/* Chat Workspace View */}
-        <ChatArea
-          activeConversation={activeConversation}
-          loading={loading}
-          onSendMessage={sendMessage}
-          status={status === 'connected' ? 'connected' : 'disconnected'}
-        />
+        {/* View Switcher: Chat Workspace vs Knowledge Base Dashboard */}
+        {currentView === 'chat' ? (
+          <ChatArea
+            activeConversation={activeConversation}
+            loading={loading}
+            onSendMessage={sendMessage}
+            status={status === 'connected' ? 'connected' : 'disconnected'}
+          />
+        ) : (
+          <KnowledgeBase backendUrl={backendUrl} />
+        )}
       </div>
 
       {/* Settings Modal Dialog */}
