@@ -1,4 +1,4 @@
-import type { Message, RAGSource, Conversation } from '../types/chat';
+import type { RAGSource, Conversation } from '../types/chat';
 
 export interface ChatRequest {
   message: string;

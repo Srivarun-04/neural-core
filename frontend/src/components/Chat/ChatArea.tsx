@@ -42,7 +42,7 @@ export function ChatArea({
             </div>
             
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-white tracking-tight">AI Brain Assistant</h2>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Neural Core Assistant</h2>
               <p className="text-sm text-gray-400 max-w-md mx-auto">
                 Ask me questions naturally, converse, or search through your indexed document knowledge base.
               </p>
@@ -85,7 +85,7 @@ export function ChatArea({
                 </div>
                 <div className="flex-1 space-y-1.5 pt-1">
                   <div className="text-xs font-semibold text-purple-400 flex items-center gap-2">
-                    AI Brain is thinking...
+                    Neural Core is thinking...
                   </div>
                   <div className="flex gap-1.5 items-center py-1">
                     <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
@@ -106,7 +106,7 @@ export function ChatArea({
         <div className="max-w-3xl mx-auto">
           <MessageInput onSend={onSendMessage} disabled={loading || isThinking || status === 'disconnected'} />
           <p className="text-[10px] text-gray-500 text-center mt-2.5">
-            AI Brain v0.3 featuring Conversational Memory, SQLite Session Persistence, and Token Streaming.
+            Neural Core Engine v0.3 — Persistent RAG System with Conversational Memory & SSE Token Streaming.
           </p>
         </div>
       </div>

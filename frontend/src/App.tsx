@@ -27,24 +27,57 @@ function App() {
   const [backendUrl, setBackendUrl] = useState(StorageUtil.getBackendUrl() || 'http://localhost:8000');
   const [status, setStatus] = useState<'connected' | 'disconnected'>('disconnected');
 
-  // Check connection status periodically
+  // Optimized connection check: Initial ping + 60s interval (paused when tab hidden) + on-focus check
   React.useEffect(() => {
+    let intervalId: any = null;
+
     const checkConnection = async () => {
+      if (document.hidden) return;
       try {
         const response = await fetch(`${backendUrl}/health`, { method: 'GET' }).catch(() => null);
-        if (response && response.ok) {
-          setStatus('connected');
-        } else {
-          setStatus('disconnected');
-        }
-      } catch (err) {
+        setStatus(response && response.ok ? 'connected' : 'disconnected');
+      } catch {
         setStatus('disconnected');
       }
     };
-    
+
     checkConnection();
-    const interval = setInterval(checkConnection, 10000);
-    return () => clearInterval(interval);
+
+    const startPolling = () => {
+      if (!intervalId && !document.hidden) {
+        intervalId = setInterval(checkConnection, 60000);
+      }
+    };
+
+    const stopPolling = () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        checkConnection();
+        startPolling();
+      }
+    };
+
+    const handleFocus = () => {
+      checkConnection();
+    };
+
+    startPolling();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [backendUrl]);
 
   const handleSaveSettings = (e: React.FormEvent) => {

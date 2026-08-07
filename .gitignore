@@ -52,6 +52,3 @@ data/
 *.swp
 *.swo
 .DS_Store
-Thumbs.db
-
-implementation_plan 1

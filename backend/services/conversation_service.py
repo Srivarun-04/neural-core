@@ -1,6 +1,6 @@
 import uuid
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
 from backend.database.sqlite_db import DatabaseManager, db_manager
 from backend.models.schemas import ChatSessionSchema, MessageSchema, SourceSchema
@@ -15,7 +15,7 @@ class ConversationService:
 
     def create_chat(self, title: Optional[str] = None) -> ChatSessionSchema:
         chat_id = str(uuid.uuid4())
-        now_str = datetime.utcnow().isoformat()
+        now_str = datetime.now(timezone.utc).isoformat()
         chat_title = title.strip() if title and title.strip() else "New Conversation"
 
         with self.db.get_connection() as conn:
@@ -71,7 +71,7 @@ class ConversationService:
             )
 
     def rename_chat(self, chat_id: str, new_title: str) -> Optional[ChatSessionSchema]:
-        now_str = datetime.utcnow().isoformat()
+        now_str = datetime.now(timezone.utc).isoformat()
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -102,7 +102,7 @@ class ConversationService:
         latency: Optional[float] = None
     ) -> MessageSchema:
         message_id = str(uuid.uuid4())
-        now_str = datetime.utcnow().isoformat()
+        now_str = datetime.now(timezone.utc).isoformat()
         sources_json = json.dumps(sources) if sources else None
 
         with self.db.get_connection() as conn:

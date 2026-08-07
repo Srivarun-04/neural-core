@@ -1,13 +1,11 @@
 import sqlite3
 import os
-import json
-from datetime import datetime
-from typing import List, Optional, Dict, Any
+from contextlib import contextmanager
 from backend.config.settings import SQLITE_DB_PATH
 
 class DatabaseManager:
     """
-    SQLite Database Manager for persisting AI Brain chats and message histories.
+    SQLite Database Manager for persisting Neural Core chats and message histories.
     """
 
     def __init__(self, db_path: str = SQLITE_DB_PATH):
@@ -17,11 +15,16 @@ class DatabaseManager:
     def _ensure_db_dir(self):
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
 
-    def get_connection(self) -> sqlite3.Connection:
+    @contextmanager
+    def get_connection(self):
+        """Context manager for SQLite database connection that automatically closes on exit."""
         conn = sqlite3.connect(self.db_path, check_same_thread=False)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON;")
-        return conn
+        try:
+            yield conn
+        finally:
+            conn.close()
 
     def init_db(self):
         """Creates tables for chats and messages if they do not exist."""

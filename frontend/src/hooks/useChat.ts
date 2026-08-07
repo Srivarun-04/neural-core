@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Conversation, Message, RAGSource } from '../types/chat';
+import type { Conversation, Message } from '../types/chat';
 import { ApiService } from '../services/api';
 
 export function useChat() {
@@ -173,7 +173,7 @@ export function useChat() {
         }));
       },
       // onDone
-      (doneData) => {
+      () => {
         setIsThinking(false);
         setLoading(false);
       },

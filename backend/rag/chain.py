@@ -19,7 +19,7 @@ class RAGChain:
         
         self.prompt = ChatPromptTemplate.from_template(
             """
-You are AI Brain, an intelligent, helpful, and articulate AI Operating System assistant.
+You are Neural Core, an intelligent, helpful, and articulate AI assistant.
 
 Your goal is to provide precise, natural, and insightful responses by combining conversational history, general knowledge, and retrieved document context.
 

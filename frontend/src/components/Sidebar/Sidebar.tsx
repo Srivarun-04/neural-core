@@ -56,7 +56,7 @@ export function Sidebar({
           <div className="p-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20">
             <Brain className="w-5 h-5 text-purple-400" />
           </div>
-          <span className="font-semibold text-white tracking-tight text-sm">AI Brain OS</span>
+          <span className="font-semibold text-white tracking-tight text-sm">Neural Core OS</span>
         </div>
         {onClose && (
           <button onClick={onClose} className="p-1 md:hidden text-gray-400 hover:text-white">

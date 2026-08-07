@@ -13,9 +13,9 @@ from backend.api.upload import get_upload_router
 
 # Initialize FastAPI App
 app = FastAPI(
-    title="AI Brain Operating System API",
+    title="Neural Core Engine API",
     version="0.3",
-    description="Production-ready AI Brain with SQLite Session Storage, Conversational Memory, RAG, and SSE Streaming."
+    description="Production-ready Neural Core Engine with SQLite Session Storage, Conversational Memory, Multi-document RAG, and SSE Streaming."
 )
 
 # CORS Configuration
@@ -38,10 +38,10 @@ rag_chain = RAGChain()
 @app.on_event("startup")
 def startup_event():
     print("\n" + "="*60)
-    print("🚀 Initializing AI Brain v0.3 Conversation System...")
+    print("🚀 Initializing Neural Core Engine v0.3...")
     db_manager.init_db()
     doc_manager.initialize_and_sync()
-    print("✨ AI Brain Core v0.3 Ready!")
+    print("✨ Neural Core Ready!")
     print("="*60 + "\n")
 
 # Mount API Routers
@@ -54,7 +54,7 @@ app.include_router(get_upload_router(doc_manager))
 @app.get("/")
 def read_root():
     return {
-        "message": "AI Brain v0.3 API is running.",
+        "message": "Neural Core v0.3 API is running.",
         "status": "healthy",
         "documentation": "/docs"
     }
