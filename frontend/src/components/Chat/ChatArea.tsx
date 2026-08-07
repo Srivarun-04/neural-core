@@ -1,0 +1,106 @@
+import { useEffect, useRef } from 'react';
+import { Bot } from 'lucide-react';
+import type { Conversation } from '../../types/chat';
+import { MessageItem } from '../Message/MessageItem';
+import { MessageInput } from '../Input/MessageInput';
+
+interface ChatAreaProps {
+  activeConversation: Conversation | null;
+  loading: boolean;
+  onSendMessage: (content: string) => void;
+  status: 'connected' | 'disconnected' | 'connecting';
+}
+
+export function ChatArea({
+  activeConversation,
+  loading,
+  onSendMessage,
+  status
+}: ChatAreaProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll logic
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [activeConversation?.messages?.length, loading]);
+
+  return (
+    <main className="flex-1 flex flex-col bg-[#080B14] relative overflow-hidden h-full">
+      {/* Messages Scroll Area */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6">
+        {!activeConversation || activeConversation.messages.length === 0 ? (
+          /* Empty/Welcome View */
+          <div className="max-w-2xl mx-auto h-[60vh] flex flex-col items-center justify-center text-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shadow-lg shadow-purple-500/5 animate-pulse">
+              <Bot className="w-8 h-8 text-purple-400" />
+            </div>
+            
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-white tracking-tight">AI Brain Assistant</h2>
+              <p className="text-sm text-gray-400 max-w-md mx-auto">
+                Ready to search, retrieve, and synthesize answers from your custom vector database.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg mt-4 text-left">
+              <button 
+                onClick={() => onSendMessage("What is remote work stipend policy?")}
+                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-gray-700 text-xs cursor-pointer"
+              >
+                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Remote office setup?</p>
+                <p className="text-gray-400 mt-1">Get details about ergonomic home stipends.</p>
+              </button>
+              
+              <button 
+                onClick={() => onSendMessage("Explain monthly internet reimbursement details")}
+                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-gray-700 text-xs cursor-pointer"
+              >
+                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Internet allowances</p>
+                <p className="text-gray-400 mt-1">Reimbursement amounts for remote vs hybrid.</p>
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Messages List */
+          <div className="max-w-3xl mx-auto space-y-6">
+            {activeConversation.messages.map((message) => (
+              <MessageItem key={message.id} message={message} />
+            ))}
+            
+            {/* Loading Indicator */}
+            {loading && (
+              <div className="flex gap-4 p-4 rounded-xl bg-gray-900/30 border border-gray-800/40 mr-12">
+                <div className="w-8 h-8 rounded-lg bg-gray-800/80 flex items-center justify-center">
+                  <Bot className="w-4.5 h-4.5 text-purple-400 animate-spin" />
+                </div>
+                <div className="flex-1 space-y-1.5 pt-1">
+                  <div className="text-xs font-semibold text-purple-400">AI Core</div>
+                  <div className="flex gap-1.5 items-center py-1">
+                    <span className="w-2.5 h-2.5 bg-gray-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-2.5 h-2.5 bg-gray-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-2.5 h-2.5 bg-gray-600 rounded-full animate-bounce"></span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+      </div>
+
+      {/* Message Input Bottom Panel */}
+      <div className="border-t border-gray-800/50 bg-[#080B14]/80 backdrop-blur-md px-4 py-4 md:px-8">
+        <div className="max-w-3xl mx-auto">
+          <MessageInput onSend={onSendMessage} disabled={loading || status === 'disconnected'} />
+          <p className="text-[10px] text-gray-500 text-center mt-2.5">
+            AI Brain accesses core policies and documentation context. Answers are based on your personal knowledge base.
+          </p>
+        </div>
+      </div>
+    </main>
+  );
+}
