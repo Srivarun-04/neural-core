@@ -13,8 +13,10 @@ function App() {
     activeConversation,
     activeId,
     loading,
+    isThinking,
     createNewChat,
     selectChat,
+    renameChat,
     deleteChat,
     sendMessage,
   } = useChat();
@@ -70,6 +72,7 @@ function App() {
           setCurrentView('chat');
           setSidebarOpen(false);
         }}
+        onRenameChat={renameChat}
         onDeleteChat={deleteChat}
         onCreateNewChat={() => {
           createNewChat();
@@ -107,6 +110,7 @@ function App() {
           <ChatArea
             activeConversation={activeConversation}
             loading={loading}
+            isThinking={isThinking}
             onSendMessage={sendMessage}
             status={status === 'connected' ? 'connected' : 'disconnected'}
           />

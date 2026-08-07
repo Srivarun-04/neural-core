@@ -1,183 +1,202 @@
-import { useState, useEffect } from 'react';
-import type { Conversation, Message } from '../types/chat';
-import { StorageUtil } from '../utils/storage';
+import { useState, useEffect, useCallback } from 'react';
+import type { Conversation, Message, RAGSource } from '../types/chat';
 import { ApiService } from '../services/api';
 
 export function useChat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isThinking, setIsThinking] = useState<boolean>(false);
+  const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
 
-  // Load conversations on mount
-  useEffect(() => {
-    const stored = StorageUtil.getConversations();
-    const storedActive = StorageUtil.getActiveConversationId();
-    
-    setConversations(stored);
-    
-    if (storedActive && stored.some(c => c.id === storedActive)) {
-      setActiveId(storedActive);
-    } else if (stored.length > 0) {
-      setActiveId(stored[0].id);
-      StorageUtil.setActiveConversationId(stored[0].id);
+  // 1. Initial Load of Sessions from SQLite Backend
+  const loadConversations = useCallback(async () => {
+    try {
+      setLoading(true);
+      const serverChats = await ApiService.fetchChats();
+      setConversations(serverChats);
+
+      if (serverChats.length > 0) {
+        setActiveId(serverChats[0].id);
+        // Load messages for the first active chat
+        const fullChat = await ApiService.getChat(serverChats[0].id);
+        setConversations(prev => prev.map(c => c.id === fullChat.id ? fullChat : c));
+      }
+    } catch (err) {
+      console.warn('Failed to load session chats from backend:', err);
+    } finally {
+      setLoading(false);
+      setInitialFetchDone(true);
     }
   }, []);
 
-  // Save conversations whenever state changes
   useEffect(() => {
-    if (conversations.length > 0) {
-      StorageUtil.saveConversations(conversations);
-    }
-  }, [conversations]);
+    loadConversations();
+  }, [loadConversations]);
 
   const activeConversation = conversations.find(c => c.id === activeId) || null;
 
-  const createNewChat = () => {
-    const newChat: Conversation = {
-      id: crypto.randomUUID(),
-      title: 'New Conversation',
-      messages: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    setConversations(prev => [newChat, ...prev]);
-    setActiveId(newChat.id);
-    StorageUtil.setActiveConversationId(newChat.id);
-  };
-
-  const selectChat = (id: string) => {
+  // 2. Select Chat & Load Full Messages from SQLite
+  const selectChat = async (id: string) => {
     setActiveId(id);
-    StorageUtil.setActiveConversationId(id);
-  };
-
-  const deleteChat = (id: string) => {
-    const filtered = conversations.filter(c => c.id !== id);
-    setConversations(filtered);
-    StorageUtil.saveConversations(filtered);
-
-    if (activeId === id) {
-      const nextActive = filtered.length > 0 ? filtered[0].id : null;
-      setActiveId(nextActive);
-      StorageUtil.setActiveConversationId(nextActive);
+    try {
+      const fullChat = await ApiService.getChat(id);
+      setConversations(prev => prev.map(c => c.id === id ? fullChat : c));
+    } catch (err) {
+      console.error('Failed to load chat history:', err);
     }
   };
 
-  const sendMessage = async (content: string) => {
-    if (!content.trim()) return;
-
-    let currentConversation = activeConversation;
-    
-    // Create chat on the fly if none is active
-    if (!currentConversation) {
-      const newChat: Conversation = {
-        id: crypto.randomUUID(),
-        title: content.substring(0, 30) || 'New Conversation',
-        messages: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      
+  // 3. Create New Chat Session
+  const createNewChat = async () => {
+    try {
+      const newChat = await ApiService.createChat('New Conversation');
       setConversations(prev => [newChat, ...prev]);
       setActiveId(newChat.id);
-      StorageUtil.setActiveConversationId(newChat.id);
-      currentConversation = newChat;
+    } catch (err) {
+      console.error('Failed to create new chat session:', err);
+    }
+  };
+
+  // 4. Rename Chat Session
+  const renameChat = async (id: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+    try {
+      await ApiService.renameChat(id, newTitle);
+      setConversations(prev => prev.map(c => c.id === id ? { ...c, title: newTitle } : c));
+    } catch (err) {
+      console.error('Failed to rename chat session:', err);
+    }
+  };
+
+  // 5. Delete Chat Session
+  const deleteChat = async (id: string) => {
+    try {
+      await ApiService.deleteChat(id);
+      const filtered = conversations.filter(c => c.id !== id);
+      setConversations(filtered);
+      if (activeId === id) {
+        const nextActive = filtered.length > 0 ? filtered[0].id : null;
+        setActiveId(nextActive);
+        if (nextActive) selectChat(nextActive);
+      }
+    } catch (err) {
+      console.error('Failed to delete chat session:', err);
+    }
+  };
+
+  // 6. Send Message with SSE Token Streaming & Typing Indicator
+  const sendMessage = async (content: string) => {
+    if (!content.trim() || loading || isThinking) return;
+
+    let targetChatId = activeId;
+    let targetChat = activeConversation;
+
+    // Create session if none exists
+    if (!targetChatId || !targetChat) {
+      try {
+        const newChat = await ApiService.createChat(content.substring(0, 30));
+        setConversations(prev => [newChat, ...prev]);
+        setActiveId(newChat.id);
+        targetChatId = newChat.id;
+        targetChat = newChat;
+      } catch (err) {
+        console.error('Failed to auto-create session for prompt:', err);
+        return;
+      }
     }
 
+    const userMsgId = crypto.randomUUID();
     const userMessage: Message = {
-      id: crypto.randomUUID(),
+      id: userMsgId,
       role: 'user',
       content,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    // Update state with user message
-    const updatedMessages = [...currentConversation.messages, userMessage];
-    
+    const assistantMsgId = crypto.randomUUID();
+    const assistantPlaceholderMessage: Message = {
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      sources: []
+    };
+
+    // Optimistically update conversation state
     setConversations(prev => prev.map(c => {
-      if (c.id === currentConversation!.id) {
+      if (c.id === targetChatId) {
+        const updatedMsgs = [...c.messages, userMessage, assistantPlaceholderMessage];
         return {
           ...c,
           title: c.messages.length === 0 ? content.substring(0, 30) : c.title,
-          messages: updatedMessages,
+          messages: updatedMsgs,
           updatedAt: new Date().toISOString()
         };
       }
       return c;
     }));
 
+    setIsThinking(true);
     setLoading(true);
 
-    try {
-      // Send the query to the FastAPI Python server
-      const apiResponse = await ApiService.sendChatMessage(content, updatedMessages);
-      
-      const botMessage: Message = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: apiResponse.response,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        sources: apiResponse.sources
-      };
+    let accumulatedContent = '';
 
-      setConversations(prev => prev.map(c => {
-        if (c.id === currentConversation!.id) {
-          return {
-            ...c,
-            messages: [...updatedMessages, botMessage],
-            updatedAt: new Date().toISOString()
-          };
-        }
-        return c;
-      }));
-    } catch (error: any) {
-      console.warn('Backend connection failed. Falling back to local offline mock...', error);
-      
-      // Fallback to local Mock Response so the UI stays fully interactive
-      try {
-        const mockResponse = await ApiService.generateMockResponse(content);
-        const botMessage: Message = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: `⚠️ [Local Mock Fallback - Backend Offline]\n\n${mockResponse.response}`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          sources: mockResponse.sources
-        };
-
+    await ApiService.streamChatMessage(
+      content,
+      targetChatId,
+      // onInit
+      (initData) => {
+        setIsThinking(false);
         setConversations(prev => prev.map(c => {
-          if (c.id === currentConversation!.id) {
+          if (c.id === targetChatId) {
             return {
               ...c,
-              messages: [...updatedMessages, botMessage],
-              updatedAt: new Date().toISOString()
+              messages: c.messages.map(m => m.id === assistantMsgId ? { ...m, sources: initData.sources } : m)
             };
           }
           return c;
         }));
-      } catch (mockError) {
-        // Fallback warning message
-        const errorMessage: Message = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: 'Error: Failed to connect to the backend server. Please verify that your FastAPI Python server is running.',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          isError: true
-        };
-
+      },
+      // onToken
+      (token) => {
+        setIsThinking(false);
+        accumulatedContent += token;
         setConversations(prev => prev.map(c => {
-          if (c.id === currentConversation!.id) {
+          if (c.id === targetChatId) {
             return {
               ...c,
-              messages: [...updatedMessages, errorMessage],
-              updatedAt: new Date().toISOString()
+              messages: c.messages.map(m => m.id === assistantMsgId ? { ...m, content: accumulatedContent } : m)
+            };
+          }
+          return c;
+        }));
+      },
+      // onDone
+      (doneData) => {
+        setIsThinking(false);
+        setLoading(false);
+      },
+      // onError
+      (error) => {
+        console.error('Streaming error:', error);
+        setIsThinking(false);
+        setLoading(false);
+        setConversations(prev => prev.map(c => {
+          if (c.id === targetChatId) {
+            return {
+              ...c,
+              messages: c.messages.map(m => m.id === assistantMsgId ? {
+                ...m,
+                content: m.content || '⚠️ Connection error generating response. Please check server logs.',
+                isError: true
+              } : m)
             };
           }
           return c;
         }));
       }
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   return {
@@ -185,8 +204,11 @@ export function useChat() {
     activeConversation,
     activeId,
     loading,
+    isThinking,
+    initialFetchDone,
     createNewChat,
     selectChat,
+    renameChat,
     deleteChat,
     sendMessage,
   };

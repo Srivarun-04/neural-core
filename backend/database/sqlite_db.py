@@ -1,0 +1,58 @@
+import sqlite3
+import os
+import json
+from datetime import datetime
+from typing import List, Optional, Dict, Any
+from backend.config.settings import SQLITE_DB_PATH
+
+class DatabaseManager:
+    """
+    SQLite Database Manager for persisting AI Brain chats and message histories.
+    """
+
+    def __init__(self, db_path: str = SQLITE_DB_PATH):
+        self.db_path = db_path
+        self._ensure_db_dir()
+
+    def _ensure_db_dir(self):
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+
+    def get_connection(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON;")
+        return conn
+
+    def init_db(self):
+        """Creates tables for chats and messages if they do not exist."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # Create Chats Table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS chats (
+                    id TEXT PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+            """)
+
+            # Create Messages Table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS messages (
+                    id TEXT PRIMARY KEY,
+                    chat_id TEXT NOT NULL,
+                    role TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    timestamp TEXT NOT NULL,
+                    sources TEXT,
+                    model TEXT,
+                    latency REAL,
+                    FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE
+                );
+            """)
+            conn.commit()
+            print(f"[DATABASE] SQLite database initialized at {self.db_path}")
+
+db_manager = DatabaseManager()

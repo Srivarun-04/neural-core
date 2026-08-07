@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Bot } from 'lucide-react';
+import { Bot, Loader2 } from 'lucide-react';
 import type { Conversation } from '../../types/chat';
 import { MessageItem } from '../Message/MessageItem';
 import { MessageInput } from '../Input/MessageInput';
@@ -7,6 +7,7 @@ import { MessageInput } from '../Input/MessageInput';
 interface ChatAreaProps {
   activeConversation: Conversation | null;
   loading: boolean;
+  isThinking?: boolean;
   onSendMessage: (content: string) => void;
   status: 'connected' | 'disconnected' | 'connecting';
 }
@@ -14,6 +15,7 @@ interface ChatAreaProps {
 export function ChatArea({
   activeConversation,
   loading,
+  isThinking,
   onSendMessage,
   status
 }: ChatAreaProps) {
@@ -26,7 +28,7 @@ export function ChatArea({
 
   useEffect(() => {
     scrollToBottom();
-  }, [activeConversation?.messages?.length, loading]);
+  }, [activeConversation?.messages, loading, isThinking]);
 
   return (
     <main className="flex-1 flex flex-col bg-[#080B14] relative overflow-hidden h-full">
@@ -42,51 +44,58 @@ export function ChatArea({
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-white tracking-tight">AI Brain Assistant</h2>
               <p className="text-sm text-gray-400 max-w-md mx-auto">
-                Ready to search, retrieve, and synthesize answers from your custom vector database.
+                Ask me questions naturally, converse, or search through your indexed document knowledge base.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg mt-4 text-left">
               <button 
-                onClick={() => onSendMessage("What is remote work stipend policy?")}
+                onClick={() => onSendMessage("My name is Varun. Remember this.")}
                 className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-gray-700 text-xs cursor-pointer"
               >
-                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Remote office setup?</p>
-                <p className="text-gray-400 mt-1">Get details about ergonomic home stipends.</p>
+                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Test Conversational Memory</p>
+                <p className="text-gray-400 mt-1">Introduce yourself and test recall.</p>
               </button>
               
               <button 
-                onClick={() => onSendMessage("Explain monthly internet reimbursement details")}
+                onClick={() => onSendMessage("What is remote work stipend policy?")}
                 className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-gray-700 text-xs cursor-pointer"
               >
-                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Internet allowances</p>
-                <p className="text-gray-400 mt-1">Reimbursement amounts for remote vs hybrid.</p>
+                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Query Vector RAG Documents</p>
+                <p className="text-gray-400 mt-1">Retrieve policy and internet stipends.</p>
               </button>
             </div>
           </div>
         ) : (
           /* Messages List */
           <div className="max-w-3xl mx-auto space-y-6">
-            {activeConversation.messages.map((message) => (
-              <MessageItem key={message.id} message={message} />
-            ))}
+            {activeConversation.messages.map((message) => {
+              // Hide empty assistant placeholder message if isThinking is active
+              if (message.role === 'assistant' && !message.content && isThinking) {
+                return null;
+              }
+              return <MessageItem key={message.id} message={message} />;
+            })}
             
-            {/* Loading Indicator */}
-            {loading && (
-              <div className="flex gap-4 p-4 rounded-xl bg-gray-900/30 border border-gray-800/40 mr-12">
+            {/* Thinking Indicator */}
+            {isThinking && (
+              <div className="flex gap-4 p-4 rounded-xl bg-gray-900/30 border border-gray-800/40 mr-12 animate-pulse">
                 <div className="w-8 h-8 rounded-lg bg-gray-800/80 flex items-center justify-center">
-                  <Bot className="w-4.5 h-4.5 text-purple-400 animate-spin" />
+                  <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
                 </div>
                 <div className="flex-1 space-y-1.5 pt-1">
-                  <div className="text-xs font-semibold text-purple-400">AI Core</div>
+                  <div className="text-xs font-semibold text-purple-400 flex items-center gap-2">
+                    AI Brain is thinking...
+                  </div>
                   <div className="flex gap-1.5 items-center py-1">
-                    <span className="w-2.5 h-2.5 bg-gray-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-2.5 h-2.5 bg-gray-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-2.5 h-2.5 bg-gray-600 rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-2 h-2 bg-purple-300 rounded-full animate-bounce"></span>
                   </div>
                 </div>
               </div>
             )}
+
             <div ref={messagesEndRef} />
           </div>
         )}
@@ -95,9 +104,9 @@ export function ChatArea({
       {/* Message Input Bottom Panel */}
       <div className="border-t border-gray-800/50 bg-[#080B14]/80 backdrop-blur-md px-4 py-4 md:px-8">
         <div className="max-w-3xl mx-auto">
-          <MessageInput onSend={onSendMessage} disabled={loading || status === 'disconnected'} />
+          <MessageInput onSend={onSendMessage} disabled={loading || isThinking || status === 'disconnected'} />
           <p className="text-[10px] text-gray-500 text-center mt-2.5">
-            AI Brain accesses core policies and documentation context. Answers are based on your personal knowledge base.
+            AI Brain v0.3 featuring Conversational Memory, SQLite Session Persistence, and Token Streaming.
           </p>
         </div>
       </div>
