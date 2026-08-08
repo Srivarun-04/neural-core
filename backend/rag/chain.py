@@ -9,9 +9,13 @@ class RAGChain:
     with conversational memory support and token streaming capabilities.
     """
     def __init__(self):
+        api_key = OPENROUTER_API_KEY or "missing_key_placeholder"
+        if not OPENROUTER_API_KEY:
+            print("⚠️ [WARNING] OPENROUTER_API_KEY / OPENAI_API_KEY is not set in environment variables!")
+
         self.llm = ChatOpenAI(
             model=LLM_MODEL,
-            api_key=OPENROUTER_API_KEY,
+            api_key=api_key,
             base_url="https://openrouter.ai/api/v1",
             streaming=True,
             temperature=0.7,
