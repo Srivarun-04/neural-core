@@ -9,6 +9,7 @@ export interface ChatResponse {
   chat_id: string;
   response: string;
   sources?: RAGSource[];
+  tools_used?: string[];
 }
 
 const DEFAULT_BACKEND_URL = 'http://localhost:8000';
@@ -36,7 +37,8 @@ export class ApiService {
         role: m.role,
         content: m.content,
         timestamp: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        sources: m.sources || []
+        sources: m.sources || [],
+        tools_used: m.tools_used || []
       }))
     }));
   }
@@ -74,7 +76,8 @@ export class ApiService {
         role: m.role,
         content: m.content,
         timestamp: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        sources: m.sources || []
+        sources: m.sources || [],
+        tools_used: m.tools_used || []
       }))
     };
   }
@@ -113,18 +116,20 @@ export class ApiService {
     return {
       chat_id: data.chat_id,
       response: data.response || '',
-      sources: data.sources || []
+      sources: data.sources || [],
+      tools_used: data.tools_used || []
     };
   }
 
-  // --- SSE Streaming Chat API ---
+  // --- SSE Streaming Chat API with Tool Status & Badge Support ---
 
   static async streamChatMessage(
     message: string,
     chatId: string | null,
     onInit: (data: { chat_id: string; sources: RAGSource[] }) => void,
+    onStatus: (statusMessage: string) => void,
     onToken: (token: string) => void,
-    onDone: (data: { chat_id: string; latency: number }) => void,
+    onDone: (data: { chat_id: string; latency: number; sources?: RAGSource[]; tools_used?: string[] }) => void,
     onError: (err: any) => void
   ): Promise<void> {
     const url = `${this.getBackendUrl()}/chat/stream`;
@@ -162,6 +167,8 @@ export class ApiService {
               const eventPayload = JSON.parse(rawData);
               if (eventPayload.type === 'init') {
                 onInit(eventPayload);
+              } else if (eventPayload.type === 'status') {
+                onStatus(eventPayload.message || 'Processing...');
               } else if (eventPayload.type === 'token') {
                 onToken(eventPayload.token);
               } else if (eventPayload.type === 'done') {

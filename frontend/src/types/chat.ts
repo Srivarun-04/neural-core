@@ -11,6 +11,7 @@ export interface Message {
   content: string;
   timestamp: string;
   sources?: RAGSource[];
+  tools_used?: string[];
   isError?: boolean;
 }
 

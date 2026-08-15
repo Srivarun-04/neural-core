@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Bot, Loader2 } from 'lucide-react';
+import { Bot, Loader2, Sparkles } from 'lucide-react';
 import type { Conversation } from '../../types/chat';
 import { MessageItem } from '../Message/MessageItem';
 import { MessageInput } from '../Input/MessageInput';
@@ -8,6 +8,7 @@ interface ChatAreaProps {
   activeConversation: Conversation | null;
   loading: boolean;
   isThinking?: boolean;
+  statusMessage?: string;
   onSendMessage: (content: string) => void;
   status: 'connected' | 'disconnected' | 'connecting';
 }
@@ -16,6 +17,7 @@ export function ChatArea({
   activeConversation,
   loading,
   isThinking,
+  statusMessage,
   onSendMessage,
   status
 }: ChatAreaProps) {
@@ -28,7 +30,7 @@ export function ChatArea({
 
   useEffect(() => {
     scrollToBottom();
-  }, [activeConversation?.messages, loading, isThinking]);
+  }, [activeConversation?.messages, loading, isThinking, statusMessage]);
 
   return (
     <main className="flex-1 flex flex-col bg-[#080B14] relative overflow-hidden h-full">
@@ -42,26 +44,32 @@ export function ChatArea({
             </div>
             
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-white tracking-tight">Neural Core Assistant</h2>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Neural Core Agent</h2>
               <p className="text-sm text-gray-400 max-w-md mx-auto">
-                Ask me questions naturally, converse, or search through your indexed document knowledge base.
+                Ask questions, compute calculations, converse naturally, or query your indexed document knowledge base.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg mt-4 text-left">
               <button 
-                onClick={() => onSendMessage("My name is Varun. Remember this.")}
-                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-gray-700 text-xs cursor-pointer"
+                onClick={() => onSendMessage("Calculate 18% of 75000")}
+                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-purple-500/40 text-xs cursor-pointer"
               >
-                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Test Conversational Memory</p>
-                <p className="text-gray-400 mt-1">Introduce yourself and test recall.</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Test Calculator Tool</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/40 text-purple-300">Tool</span>
+                </div>
+                <p className="text-gray-400 mt-1">Compute exact arithmetic & percentages.</p>
               </button>
               
               <button 
-                onClick={() => onSendMessage("What is remote work stipend policy?")}
-                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-gray-700 text-xs cursor-pointer"
+                onClick={() => onSendMessage("What is remote work stipend policy in my files?")}
+                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-purple-500/40 text-xs cursor-pointer"
               >
-                <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Query Vector RAG Documents</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Query Vector Documents</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/40 text-purple-300">RAG</span>
+                </div>
                 <p className="text-gray-400 mt-1">Retrieve policy and internet stipends.</p>
               </button>
             </div>
@@ -77,15 +85,16 @@ export function ChatArea({
               return <MessageItem key={message.id} message={message} />;
             })}
             
-            {/* Thinking Indicator */}
+            {/* Thinking & Live Tool Status Indicator */}
             {isThinking && (
-              <div className="flex gap-4 p-4 rounded-xl bg-gray-900/30 border border-gray-800/40 mr-12 animate-pulse">
+              <div className="flex gap-4 p-4 rounded-xl bg-gray-900/40 border border-purple-500/20 mr-12 animate-pulse">
                 <div className="w-8 h-8 rounded-lg bg-gray-800/80 flex items-center justify-center">
                   <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
                 </div>
                 <div className="flex-1 space-y-1.5 pt-1">
-                  <div className="text-xs font-semibold text-purple-400 flex items-center gap-2">
-                    Neural Core is thinking...
+                  <div className="text-xs font-semibold text-purple-300 flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                    <span>{statusMessage || 'Neural Core is thinking...'}</span>
                   </div>
                   <div className="flex gap-1.5 items-center py-1">
                     <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
@@ -106,7 +115,7 @@ export function ChatArea({
         <div className="max-w-3xl mx-auto">
           <MessageInput onSend={onSendMessage} disabled={loading || isThinking || status === 'disconnected'} />
           <p className="text-[10px] text-gray-500 text-center mt-2.5">
-            Neural Core Engine v0.3 — Persistent RAG System with Conversational Memory & SSE Token Streaming.
+            Neural Core Engine v0.4 — Tool-Calling AI Agent with RAG, Calculator & Memory.
           </p>
         </div>
       </div>

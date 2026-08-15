@@ -1,8 +1,19 @@
-import { Bot, User, BookOpen, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Bot, User, BookOpen, ExternalLink, AlertTriangle, Calculator, Wrench } from 'lucide-react';
 import type { Message } from '../../types/chat';
 
 interface MessageItemProps {
   message: Message;
+}
+
+function getToolBadgeIcon(toolName: string) {
+  const lower = toolName.toLowerCase();
+  if (lower.includes('calc')) {
+    return <Calculator className="w-3 h-3 text-emerald-400" />;
+  }
+  if (lower.includes('knowledge') || lower.includes('rag') || lower.includes('document')) {
+    return <BookOpen className="w-3 h-3 text-purple-400" />;
+  }
+  return <Wrench className="w-3 h-3 text-purple-400" />;
 }
 
 export function MessageItem({ message }: MessageItemProps) {
@@ -37,11 +48,29 @@ export function MessageItem({ message }: MessageItemProps) {
       {/* Main Text Content */}
       <div className="flex-1 space-y-3 min-w-0">
         <div className="flex items-center justify-between">
-          <span className={`text-xs font-semibold ${
-            isUser ? 'text-purple-400' : isError ? 'text-rose-400' : 'text-purple-400'
-          }`}>
-            {isUser ? 'You' : isError ? 'System Error' : 'AI Core'}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={`text-xs font-semibold ${
+              isUser ? 'text-purple-400' : isError ? 'text-rose-400' : 'text-purple-400'
+            }`}>
+              {isUser ? 'You' : isError ? 'System Error' : 'Neural Core'}
+            </span>
+
+            {/* Tools Used Badges */}
+            {!isUser && message.tools_used && message.tools_used.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {message.tools_used.map((tool, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-800/80 border border-gray-700/60 text-gray-300"
+                  >
+                    {getToolBadgeIcon(tool)}
+                    <span>Used: {tool}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
           <span className="text-[10px] text-gray-500">{message.timestamp}</span>
         </div>
         

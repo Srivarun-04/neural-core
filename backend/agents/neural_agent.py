@@ -1,22 +1,35 @@
 import time
-import json
-from typing import List, Dict, Any, Optional, Tuple, Generator, AsyncGenerator
+import re
+from typing import List, Dict, Any, Optional, Tuple, Generator, Callable
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage, BaseMessage
 from langchain_core.tools import BaseTool
 from backend.config.settings import OPENROUTER_API_KEY, LLM_MODEL, AGENT_MAX_ITERATIONS
 from backend.models.schemas import SourceSchema
-from backend.tools.base import ToolRegistry, ToolExecutionContext
+from backend.tools.base import ToolRegistry, ToolExecutionContext, get_tool_status_message
 from backend.tools.calculator_tool import calculator_tool
 from backend.tools.rag_tool import create_rag_tool, RAGSearchTool
-from backend.tools.web_search_tool import create_web_search_tool, WebSearchTool
 from backend.services.document_manager import DocumentManager
 from backend.agents.prompts import SYSTEM_AGENT_PROMPT
+
+def clean_agent_output(text: str) -> str:
+    """
+    Cleans up any lingering meta-prefixes, system annotations,
+    or internal tags from the model output.
+    """
+    if not text:
+        return ""
+    # Strip common meta labels like '- **Direct reply from conversation history**'
+    text = re.sub(r'^\s*-\s*\*\*Direct reply[^\n]*\*\*\s*\n*', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'^\s*\*\*Direct reply[^\n]*\*\*\s*\n*', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'^\s*-\s*Direct reply[^\n]*\n*', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'^\s*-\s*\*\*Reasoning[^\n]*\*\*\s*\n*', '', text, flags=re.IGNORECASE)
+    return text.strip()
 
 class NeuralAgent:
     """
     Intelligent Tool-Calling Agent for Neural Core.
-    Coordinates memory, tool selection (RAG, Calculator, Web Search),
+    Coordinates memory, tool selection (RAG, Calculator),
     and response generation with full streaming and source citation tracking.
     """
     def __init__(self, doc_manager: Optional[DocumentManager] = None):
@@ -44,10 +57,6 @@ class NeuralAgent:
             rag_tool = create_rag_tool(self.doc_manager)
             self.registry.register("knowledge_base_search", rag_tool, rag_tool.description)
 
-        # 3. Web Search Tool
-        web_tool = create_web_search_tool()
-        self.registry.register("web_search", web_tool, web_tool.description)
-
     def get_tools_list(self, execution_context: Optional[ToolExecutionContext] = None) -> List[Any]:
         """Returns list of LangChain-compatible tools bound to the execution context."""
         tools = []
@@ -57,9 +66,6 @@ class NeuralAgent:
         # RAG Tool with attached execution context
         if self.doc_manager:
             tools.append(create_rag_tool(self.doc_manager, execution_context=execution_context))
-
-        # Web Search Tool with attached execution context
-        tools.append(create_web_search_tool(execution_context=execution_context))
 
         return tools
 
@@ -77,9 +83,10 @@ class NeuralAgent:
         question: str,
         chat_history: str = "",
         max_iterations: int = AGENT_MAX_ITERATIONS
-    ) -> Tuple[str, List[SourceSchema], float]:
+    ) -> Tuple[str, List[SourceSchema], List[str], float]:
         """
-        Executes the agent synchronously with tool calling and returns (response_text, sources, latency).
+        Executes the agent synchronously with tool calling.
+        Returns (response_text, sources, tools_used, latency).
         """
         start_time = time.time()
         context = ToolExecutionContext()
@@ -98,10 +105,8 @@ class NeuralAgent:
                 ai_msg: AIMessage = llm_with_tools.invoke(messages)
                 messages.append(ai_msg)
 
-                # Check if model requested tool calls
                 tool_calls = getattr(ai_msg, "tool_calls", None)
                 if not tool_calls:
-                    # Model produced a direct final answer
                     final_answer = ai_msg.content
                     break
 
@@ -116,9 +121,9 @@ class NeuralAgent:
                         try:
                             tool_result = selected_tool.invoke(tool_args)
                         except Exception as tool_err:
-                            tool_result = f"Error executing tool {tool_name}: {str(tool_err)}"
+                            tool_result = f"Tool execution notice: {str(tool_err)}"
                     else:
-                        tool_result = f"Tool '{tool_name}' not recognized."
+                        tool_result = f"Tool '{tool_name}' is currently unavailable."
 
                     tool_msg = ToolMessage(
                         content=str(tool_result),
@@ -128,7 +133,6 @@ class NeuralAgent:
                     messages.append(tool_msg)
 
             if not final_answer and messages:
-                # If loop finished on a tool message, invoke LLM one last time for the synthesis
                 final_ai = self.llm.invoke(messages)
                 final_answer = final_ai.content
 
@@ -136,18 +140,23 @@ class NeuralAgent:
             print(f"[AGENT ERROR] Agent invocation failed: {e}")
             final_answer = f"I encountered an issue processing your request: {str(e)}"
 
+        clean_answer = clean_agent_output(final_answer)
         latency = round(time.time() - start_time, 3)
-        return final_answer, context.get_sources(), latency
+        return clean_answer, context.get_sources(), context.get_tools_used(), latency
 
-    def stream_agent(
+    def stream_agent_events(
         self,
         question: str,
         chat_history: str = "",
         max_iterations: int = AGENT_MAX_ITERATIONS
-    ) -> Tuple[Generator[str, None, None], ToolExecutionContext]:
+    ) -> Generator[Dict[str, Any], None, None]:
         """
-        Executes intermediate tool calls and streams the final synthesis response tokens.
-        Returns a tuple of (token_generator, execution_context).
+        Executes intermediate tool calls yielding live status events ('Searching knowledge base...',
+        'Calculating...', etc.) and then yields tokens for the synthesized response.
+        Yields event dicts:
+          {"type": "status", "message": "..."}
+          {"type": "token", "token": "..."}
+          {"type": "context", "sources": [...], "tools_used": [...]}
         """
         context = ToolExecutionContext()
         tools = self.get_tools_list(execution_context=context)
@@ -164,32 +173,36 @@ class NeuralAgent:
 
             tool_calls = getattr(ai_msg, "tool_calls", None)
             if not tool_calls:
-                # Direct answer reached; stream it
-                # If ai_msg already has content, yield it or re-stream
-                def direct_generator():
-                    # If content already returned by non-streaming invoke:
-                    if ai_msg.content:
-                        yield ai_msg.content
-                    else:
-                        for chunk in self.llm.stream(messages[:-1]):
-                            if chunk.content:
-                                yield chunk.content
-                return direct_generator(), context
+                # Direct answer reached
+                yield {"type": "status", "message": "Generating response..."}
+                yield {"type": "context", "sources": context.get_sources(), "tools_used": context.get_tools_used()}
+                
+                # Stream synthesis
+                if ai_msg.content:
+                    yield {"type": "token", "token": clean_agent_output(ai_msg.content)}
+                else:
+                    for chunk in self.llm.stream(messages[:-1]):
+                        if chunk.content:
+                            yield {"type": "token", "token": chunk.content}
+                return
 
-            # Execute tool calls
+            # Execute tool calls with live status notifications
             for tool_call in tool_calls:
                 tool_name = tool_call.get("name", "")
                 tool_args = tool_call.get("args", {})
                 call_id = tool_call.get("id", f"call_{iteration}")
+
+                status_text = get_tool_status_message(tool_name)
+                yield {"type": "status", "message": status_text}
 
                 selected_tool = tool_map.get(tool_name)
                 if selected_tool:
                     try:
                         tool_result = selected_tool.invoke(tool_args)
                     except Exception as tool_err:
-                        tool_result = f"Error executing tool {tool_name}: {str(tool_err)}"
+                        tool_result = f"Tool execution notice: {str(tool_err)}"
                 else:
-                    tool_result = f"Tool '{tool_name}' not recognized."
+                    tool_result = f"Tool '{tool_name}' is currently unavailable."
 
                 tool_msg = ToolMessage(
                     content=str(tool_result),
@@ -198,10 +211,10 @@ class NeuralAgent:
                 )
                 messages.append(tool_msg)
 
-        # Stream final synthesis after tool results
-        def final_generator():
-            for chunk in self.llm.stream(messages):
-                if chunk.content:
-                    yield chunk.content
+        # After tool execution, synthesize final response
+        yield {"type": "status", "message": "Generating response..."}
+        yield {"type": "context", "sources": context.get_sources(), "tools_used": context.get_tools_used()}
 
-        return final_generator(), context
+        for chunk in self.llm.stream(messages):
+            if chunk.content:
+                yield {"type": "token", "token": chunk.content}

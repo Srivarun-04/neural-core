@@ -27,7 +27,7 @@ class DatabaseManager:
             conn.close()
 
     def init_db(self):
-        """Creates tables for chats and messages if they do not exist."""
+        """Creates tables for chats and messages if they do not exist, and ensures schema columns."""
         with self.get_connection() as conn:
             cursor = conn.cursor()
             
@@ -50,11 +50,22 @@ class DatabaseManager:
                     content TEXT NOT NULL,
                     timestamp TEXT NOT NULL,
                     sources TEXT,
+                    tools_used TEXT,
                     model TEXT,
                     latency REAL,
                     FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE
                 );
             """)
+
+            # Migration check: Ensure tools_used column exists for pre-existing tables
+            try:
+                cursor.execute("SELECT tools_used FROM messages LIMIT 1;")
+            except sqlite3.OperationalError:
+                try:
+                    cursor.execute("ALTER TABLE messages ADD COLUMN tools_used TEXT;")
+                except Exception:
+                    pass
+
             conn.commit()
             print(f"[DATABASE] SQLite database initialized at {self.db_path}")
 

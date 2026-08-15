@@ -1,6 +1,6 @@
 import time
 import json
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator, Optional, List
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
 from backend.models.schemas import ChatRequest, ChatResponse, SourceSchema
@@ -27,7 +27,6 @@ def get_chat_router(
         # Ensure active chat session
         chat_id = request.chat_id
         if not chat_id or not conv_service.get_chat(chat_id, include_messages=False):
-            # Auto-create chat if not provided or doesn't exist
             new_chat = conv_service.create_chat(title=question[:30] + ("..." if len(question) > 30 else ""))
             chat_id = new_chat.id
 
@@ -39,19 +38,20 @@ def get_chat_router(
 
         try:
             # 3. Execute NeuralAgent (handles tool selection, RAG, calculator, web search)
-            ai_answer, sources_list, agent_latency = agent.invoke(
+            ai_answer, sources_list, tools_used, agent_latency = agent.invoke(
                 question=question,
                 chat_history=chat_history
             )
             total_latency = round(time.time() - start_time, 3)
 
-            # 4. Save Assistant Message with collected sources to SQLite
+            # 4. Save Assistant Message with collected sources & tools_used to SQLite
             sources_dict_list = [s.dict() for s in sources_list]
             conv_service.add_message(
                 chat_id=chat_id,
                 role="assistant",
                 content=ai_answer,
                 sources=sources_dict_list,
+                tools_used=tools_used,
                 model=LLM_MODEL,
                 latency=total_latency
             )
@@ -59,7 +59,8 @@ def get_chat_router(
             return ChatResponse(
                 chat_id=chat_id,
                 response=ai_answer,
-                sources=sources_list
+                sources=sources_list,
+                tools_used=tools_used
             )
 
         except Exception as e:
@@ -70,7 +71,8 @@ def get_chat_router(
     async def chat_stream_endpoint(request: ChatRequest):
         """
         Streaming endpoint returning Server-Sent Events (SSE).
-        Streams LLM tokens live while dynamically resolving tool calls and persisting full output to SQLite.
+        Streams status events ('Searching knowledge base...', 'Calculating...'),
+        live token generation, and persists completed message with tool badges to SQLite.
         """
         start_time = time.time()
         question = request.message.strip()
@@ -90,57 +92,72 @@ def get_chat_router(
         chat_history = memory_service.get_formatted_history_text(chat_id)
 
         async def sse_generator() -> AsyncGenerator[str, None]:
-            accumulated_response = []
+            accumulated_tokens: List[str] = []
+            collected_sources: List[SourceSchema] = []
+            collected_tools: List[str] = []
+            init_sent = False
+
             try:
-                # Execute agent stream generator
-                token_gen, execution_context = agent.stream_agent(
-                    question=question,
-                    chat_history=chat_history
-                )
-
-                sources_list = execution_context.get_sources()
-
-                # Send initial session metadata event with any upfront/discovered sources
+                # Initial handshake event
                 init_event = {
                     "type": "init",
                     "chat_id": chat_id,
-                    "sources": [s.dict() for s in sources_list]
+                    "sources": []
                 }
                 yield f"data: {json.dumps(init_event)}\n\n"
+                init_sent = True
 
-                # Stream response tokens
-                for token in token_gen:
-                    accumulated_response.append(token)
-                    chunk_event = {
-                        "type": "token",
-                        "token": token
-                    }
-                    yield f"data: {json.dumps(chunk_event)}\n\n"
+                # Process agent stream events
+                for event in agent.stream_agent_events(question=question, chat_history=chat_history):
+                    ev_type = event.get("type")
 
-                full_text = "".join(accumulated_response)
+                    if ev_type == "status":
+                        status_event = {
+                            "type": "status",
+                            "message": event.get("message", "Processing...")
+                        }
+                        yield f"data: {json.dumps(status_event)}\n\n"
+
+                    elif ev_type == "context":
+                        collected_sources = event.get("sources", [])
+                        collected_tools = event.get("tools_used", [])
+
+                    elif ev_type == "token":
+                        token_str = event.get("token", "")
+                        accumulated_tokens.append(token_str)
+                        chunk_event = {
+                            "type": "token",
+                            "token": token_str
+                        }
+                        yield f"data: {json.dumps(chunk_event)}\n\n"
+
+                full_text = "".join(accumulated_tokens)
                 total_latency = round(time.time() - start_time, 3)
 
-                # Persist completed assistant response to SQLite
-                final_sources = execution_context.get_sources()
-                sources_dict_list = [s.dict() for s in final_sources]
+                # Persist completed assistant message to SQLite
+                sources_dict_list = [s.dict() for s in collected_sources]
                 conv_service.add_message(
                     chat_id=chat_id,
                     role="assistant",
                     content=full_text,
                     sources=sources_dict_list,
+                    tools_used=collected_tools,
                     model=LLM_MODEL,
                     latency=total_latency
                 )
 
+                # Final done event
                 done_event = {
                     "type": "done",
                     "chat_id": chat_id,
                     "latency": total_latency,
-                    "sources": sources_dict_list
+                    "sources": sources_dict_list,
+                    "tools_used": collected_tools
                 }
                 yield f"data: {json.dumps(done_event)}\n\n"
 
             except Exception as stream_err:
+                print(f"[STREAM ERROR] Exception during SSE generation: {stream_err}")
                 error_event = {
                     "type": "error",
                     "detail": str(stream_err)

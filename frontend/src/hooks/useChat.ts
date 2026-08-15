@@ -7,6 +7,7 @@ export function useChat() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isThinking, setIsThinking] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<string>('Neural Core is thinking...');
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
 
   // 1. Initial Load of Sessions from SQLite Backend
@@ -18,7 +19,6 @@ export function useChat() {
 
       if (serverChats.length > 0) {
         setActiveId(serverChats[0].id);
-        // Load messages for the first active chat
         const fullChat = await ApiService.getChat(serverChats[0].id);
         setConversations(prev => prev.map(c => c.id === fullChat.id ? fullChat : c));
       }
@@ -85,14 +85,13 @@ export function useChat() {
     }
   };
 
-  // 6. Send Message with SSE Token Streaming & Typing Indicator
+  // 6. Send Message with SSE Token & Tool Status Streaming
   const sendMessage = async (content: string) => {
     if (!content.trim() || loading || isThinking) return;
 
     let targetChatId = activeId;
     let targetChat = activeConversation;
 
-    // Create session if none exists
     if (!targetChatId || !targetChat) {
       try {
         const newChat = await ApiService.createChat(content.substring(0, 30));
@@ -120,7 +119,8 @@ export function useChat() {
       role: 'assistant',
       content: '',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      sources: []
+      sources: [],
+      tools_used: []
     };
 
     // Optimistically update conversation state
@@ -137,6 +137,7 @@ export function useChat() {
       return c;
     }));
 
+    setStatusMessage('Neural Core is thinking...');
     setIsThinking(true);
     setLoading(true);
 
@@ -147,7 +148,6 @@ export function useChat() {
       targetChatId,
       // onInit
       (initData) => {
-        setIsThinking(false);
         setConversations(prev => prev.map(c => {
           if (c.id === targetChatId) {
             return {
@@ -157,6 +157,10 @@ export function useChat() {
           }
           return c;
         }));
+      },
+      // onStatus
+      (statusText) => {
+        setStatusMessage(statusText);
       },
       // onToken
       (token) => {
@@ -173,15 +177,30 @@ export function useChat() {
         }));
       },
       // onDone
-      () => {
+      (doneData) => {
         setIsThinking(false);
         setLoading(false);
+        setStatusMessage('Neural Core is thinking...');
+        setConversations(prev => prev.map(c => {
+          if (c.id === targetChatId) {
+            return {
+              ...c,
+              messages: c.messages.map(m => m.id === assistantMsgId ? {
+                ...m,
+                sources: doneData.sources || m.sources,
+                tools_used: doneData.tools_used || m.tools_used || []
+              } : m)
+            };
+          }
+          return c;
+        }));
       },
       // onError
       (error) => {
         console.error('Streaming error:', error);
         setIsThinking(false);
         setLoading(false);
+        setStatusMessage('Neural Core is thinking...');
         setConversations(prev => prev.map(c => {
           if (c.id === targetChatId) {
             return {
@@ -205,6 +224,7 @@ export function useChat() {
     activeId,
     loading,
     isThinking,
+    statusMessage,
     initialFetchDone,
     createNewChat,
     selectChat,

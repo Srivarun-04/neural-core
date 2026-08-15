@@ -14,6 +14,7 @@ function App() {
     activeId,
     loading,
     isThinking,
+    statusMessage,
     createNewChat,
     selectChat,
     renameChat,
@@ -144,6 +145,7 @@ function App() {
             activeConversation={activeConversation}
             loading={loading}
             isThinking={isThinking}
+            statusMessage={statusMessage}
             onSendMessage={sendMessage}
             status={status === 'connected' ? 'connected' : 'disconnected'}
           />

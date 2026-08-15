@@ -1,6 +1,8 @@
 import unittest
-from backend.agents.neural_agent import NeuralAgent
+from backend.agents.neural_agent import NeuralAgent, clean_agent_output
+from backend.agents.prompts import SYSTEM_AGENT_PROMPT
 from backend.services.document_manager import DocumentManager
+from backend.tools.base import get_tool_display_name, get_tool_status_message
 from fastapi.testclient import TestClient
 from main import app
 
@@ -12,11 +14,34 @@ class TestNeuralAgent(unittest.TestCase):
 
     def test_agent_tool_registry(self):
         tools = self.agent.registry.get_all_tools()
-        self.assertGreaterEqual(len(tools), 2)
+        self.assertEqual(len(tools), 2)
         tool_names = [t["name"] for t in self.agent.registry.get_tool_metadata()]
         self.assertIn("calculator_tool", tool_names)
         self.assertIn("knowledge_base_search", tool_names)
-        self.assertIn("web_search", tool_names)
+        self.assertNotIn("web_search", tool_names)
+
+    def test_tool_metadata_and_display_names(self):
+        self.assertEqual(get_tool_display_name("knowledge_base_search"), "Knowledge Base")
+        self.assertEqual(get_tool_display_name("calculator_tool"), "Calculator")
+
+        self.assertEqual(get_tool_status_message("knowledge_base_search"), "Searching knowledge base...")
+        self.assertEqual(get_tool_status_message("calculator_tool"), "Calculating...")
+
+    def test_real_time_guidelines_in_system_prompt(self):
+        self.assertIn("No Real-Time Internet Access", SYSTEM_AGENT_PROMPT)
+        self.assertNotIn("`web_search", SYSTEM_AGENT_PROMPT)
+
+    def test_clean_agent_output_formatting(self):
+        dirty_output_1 = "- **Direct reply from conversation history**\nHello! How can I assist you today?"
+        cleaned_1 = clean_agent_output(dirty_output_1)
+        self.assertEqual(cleaned_1, "Hello! How can I assist you today?")
+
+        dirty_output_2 = "**Direct reply**\nYour name is Varun."
+        cleaned_2 = clean_agent_output(dirty_output_2)
+        self.assertEqual(cleaned_2, "Your name is Varun.")
+
+        clean_text = "The calculated value is 10,869,816."
+        self.assertEqual(clean_agent_output(clean_text), clean_text)
 
     def test_health_with_tools_reported(self):
         res = self.client.get("/health")
@@ -25,6 +50,16 @@ class TestNeuralAgent(unittest.TestCase):
         self.assertEqual(data["version"], "0.4")
         self.assertIn("calculator_tool", data["tools"])
         self.assertIn("knowledge_base_search", data["tools"])
+        self.assertNotIn("web_search", data["tools"])
+
+    def test_chat_endpoint_schema(self):
+        create_res = self.client.post("/chats", json={"title": "Agent Schema Test"})
+        self.assertEqual(create_res.status_code, 201)
+        chat_id = create_res.json()["id"]
+
+        get_res = self.client.get(f"/chats/{chat_id}")
+        self.assertEqual(get_res.status_code, 200)
+        self.assertIn("messages", get_res.json())
 
 if __name__ == "__main__":
     unittest.main()

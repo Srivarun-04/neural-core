@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.database.sqlite_db import db_manager
 from backend.services.document_manager import DocumentManager
 from backend.services.conversation_service import ConversationService
+from backend.config.settings import CORS_ORIGINS
 from backend.services.memory_service import MemoryService
 from backend.agents.neural_agent import NeuralAgent
 from backend.api.health import get_health_router
@@ -24,13 +25,13 @@ from backend.api.upload import get_upload_router
 app = FastAPI(
     title="Neural Core Engine API",
     version="0.4",
-    description="Production-ready Neural Core Engine with AI Agent Tool Calling (RAG, Calculator, Web Search), SQLite Session Storage, Conversational Memory, and SSE Streaming."
+    description="Production-ready Neural Core Engine with AI Agent Tool Calling (RAG & Safe Calculator), SQLite Session Storage, Conversational Memory, and SSE Streaming."
 )
 
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

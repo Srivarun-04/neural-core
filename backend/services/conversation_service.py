@@ -98,12 +98,14 @@ class ConversationService:
         role: str,
         content: str,
         sources: Optional[List[Dict[str, Any]]] = None,
+        tools_used: Optional[List[str]] = None,
         model: Optional[str] = None,
         latency: Optional[float] = None
     ) -> MessageSchema:
         message_id = str(uuid.uuid4())
         now_str = datetime.now(timezone.utc).isoformat()
         sources_json = json.dumps(sources) if sources else None
+        tools_used_json = json.dumps(tools_used) if tools_used else None
 
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
@@ -118,10 +120,10 @@ class ConversationService:
             # Insert message
             cursor.execute(
                 """
-                INSERT INTO messages (id, chat_id, role, content, timestamp, sources, model, latency)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO messages (id, chat_id, role, content, timestamp, sources, tools_used, model, latency)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (message_id, chat_id, role, content, now_str, sources_json, model, latency)
+                (message_id, chat_id, role, content, now_str, sources_json, tools_used_json, model, latency)
             )
 
             # Touch chat updated_at
@@ -139,6 +141,7 @@ class ConversationService:
             content=content,
             timestamp=now_str,
             sources=parsed_sources,
+            tools_used=tools_used or [],
             model=model,
             latency=latency
         )
@@ -150,7 +153,7 @@ class ConversationService:
             if limit:
                 query = """
                     SELECT * FROM (
-                        SELECT id, chat_id, role, content, timestamp, sources, model, latency
+                        SELECT id, chat_id, role, content, timestamp, sources, tools_used, model, latency
                         FROM messages
                         WHERE chat_id = ?
                         ORDER BY timestamp DESC
@@ -160,7 +163,7 @@ class ConversationService:
                 cursor.execute(query, (chat_id, int(limit)))
             else:
                 query = """
-                    SELECT id, chat_id, role, content, timestamp, sources, model, latency
+                    SELECT id, chat_id, role, content, timestamp, sources, tools_used, model, latency
                     FROM messages
                     WHERE chat_id = ?
                     ORDER BY timestamp ASC
@@ -177,6 +180,14 @@ class ConversationService:
                     except Exception:
                         sources_list = []
 
+                tools_used_raw = row["tools_used"] if "tools_used" in row.keys() else None
+                tools_used_list = []
+                if tools_used_raw:
+                    try:
+                        tools_used_list = json.loads(tools_used_raw)
+                    except Exception:
+                        tools_used_list = []
+
                 messages.append(MessageSchema(
                     id=row["id"],
                     chat_id=row["chat_id"],
@@ -184,6 +195,7 @@ class ConversationService:
                     content=row["content"],
                     timestamp=row["timestamp"],
                     sources=sources_list,
+                    tools_used=tools_used_list,
                     model=row["model"],
                     latency=row["latency"]
                 ))

@@ -13,6 +13,7 @@ class MessageSchema(BaseModel):
     content: str
     timestamp: str
     sources: Optional[List[SourceSchema]] = []
+    tools_used: Optional[List[str]] = []
     model: Optional[str] = None
     latency: Optional[float] = None
 
@@ -36,8 +37,8 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     chat_id: str
     response: str
-    sources: List[SourceSchema]
-
+    sources: List[SourceSchema] = []
+    tools_used: List[str] = []
 
 class DocumentInfo(BaseModel):
     filename: str
