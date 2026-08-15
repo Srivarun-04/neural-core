@@ -49,30 +49,6 @@ export function ChatArea({
                 Ask questions, compute calculations, converse naturally, or query your indexed document knowledge base.
               </p>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg mt-4 text-left">
-              <button 
-                onClick={() => onSendMessage("Calculate 18% of 75000")}
-                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-purple-500/40 text-xs cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Test Calculator Tool</p>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/40 text-purple-300">Tool</span>
-                </div>
-                <p className="text-gray-400 mt-1">Compute exact arithmetic & percentages.</p>
-              </button>
-              
-              <button 
-                onClick={() => onSendMessage("What is remote work stipend policy in my files?")}
-                className="p-4 bg-gray-900/40 hover:bg-gray-900/80 border border-gray-800 rounded-xl transition-all group hover:border-purple-500/40 text-xs cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold text-white group-hover:text-purple-400 transition-colors">Query Vector Documents</p>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/40 text-purple-300">RAG</span>
-                </div>
-                <p className="text-gray-400 mt-1">Retrieve policy and internet stipends.</p>
-              </button>
-            </div>
           </div>
         ) : (
           /* Messages List */

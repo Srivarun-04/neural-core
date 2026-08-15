@@ -12,7 +12,7 @@ from backend.rag.splitter import DocumentSplitter
 class DocumentManager:
     """
     Manages the indexing lifecycle of documents in data/, tracking manifest metadata,
-    and triggering FAISS persistent updates.
+    and triggering FAISS persistent updates and complete document deletions.
     """
     def __init__(self):
         self.embeddings = get_embeddings_model()
@@ -122,6 +122,62 @@ class DocumentManager:
 
         print(f"[DOCUMENT MANAGER] Successfully indexed {filename} ({len(chunks)} chunks).")
         return len(chunks)
+
+    def rebuild_full_index(self):
+        """
+        Reconstructs the FAISS vector index from all remaining supported files in data/.
+        """
+        all_chunks = []
+        if os.path.exists(DATA_DIR):
+            for fname in os.listdir(DATA_DIR):
+                fpath = os.path.join(DATA_DIR, fname)
+                if os.path.isfile(fpath) and DocumentLoaderFactory.is_supported(fpath) and fname in self.manifest.get("documents", {}):
+                    raw_docs = DocumentLoaderFactory.load_document(fpath)
+                    file_chunks = self.splitter.split_and_enrich(raw_docs, fname)
+                    all_chunks.extend(file_chunks)
+
+        if all_chunks:
+            self.vector_store_manager.create_and_save(all_chunks)
+        else:
+            self.vector_store_manager.clear_index()
+
+        self.manifest["total_chunks"] = sum(
+            doc["chunk_count"] for doc in self.manifest["documents"].values()
+        )
+        self._save_manifest()
+
+    def delete_document(self, filename: str) -> bool:
+        """
+        Completely purges a document:
+        1. Deletes raw file from data/
+        2. Removes manifest record
+        3. Rebuilds/clears FAISS index to ensure deleted content is never retrieved
+        """
+        filename = os.path.basename(filename.strip())
+        file_path = os.path.join(DATA_DIR, filename)
+
+        found = False
+        # 1. Remove physical file from data/
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                print(f"[DOCUMENT MANAGER] Deleted physical file: {file_path}")
+                found = True
+            except Exception as e:
+                print(f"[DOCUMENT MANAGER] Error removing file {file_path}: {e}")
+
+        # 2. Remove entry from manifest
+        if filename in self.manifest.get("documents", {}):
+            del self.manifest["documents"][filename]
+            found = True
+
+        if not found:
+            return False
+
+        # 3. Rebuild vector store with remaining documents
+        self.rebuild_full_index()
+        print(f"[DOCUMENT MANAGER] Successfully purged document {filename} and synchronized vector index.")
+        return True
 
     def get_documents_list(self) -> List[Dict[str, Any]]:
         """Returns list of indexed document information."""

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Database, FileText, Layers, Cpu, Server, Upload, RefreshCw, CheckCircle2, AlertCircle, HardDrive } from 'lucide-react';
+import { Database, FileText, Layers, Cpu, Server, Upload, RefreshCw, CheckCircle2, AlertCircle, HardDrive, Trash2, Loader2 } from 'lucide-react';
 
 interface DocumentInfo {
   filename: string;
@@ -27,6 +27,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [deletingFile, setDeletingFile] = useState<string | null>(null);
   const [uploadStatus, setUploadStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const fetchData = async () => {
@@ -97,6 +98,41 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
     }
   };
 
+  const handleDeleteDocument = async (filename: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete "${filename}" and purge all its vectors from the Knowledge Base?`)) {
+      return;
+    }
+
+    setDeletingFile(filename);
+    setUploadStatus(null);
+
+    try {
+      const response = await fetch(`${backendUrl}/documents/${encodeURIComponent(filename)}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || `Failed to delete ${filename}`);
+      }
+
+      setUploadStatus({
+        type: 'success',
+        message: data.message || `Document "${filename}" was successfully deleted and purged.`
+      });
+
+      await fetchData();
+    } catch (err: any) {
+      setUploadStatus({
+        type: 'error',
+        message: err.message || `Failed to delete document ${filename}`
+      });
+    } finally {
+      setDeletingFile(null);
+    }
+  };
+
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -117,7 +153,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
               <span>Knowledge Base & Persistent Index</span>
             </h2>
             <p className="text-sm text-gray-400 mt-1">
-              Manage indexed documents, inspect chunk stats, and upload new data directly into the FAISS vector database.
+              Manage indexed documents, inspect chunk stats, and upload or purge files in the FAISS vector database.
             </p>
           </div>
 
@@ -125,18 +161,18 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
             <button
               onClick={fetchData}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-xl text-xs font-semibold text-gray-300 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gray-900/60 hover:bg-gray-900 border border-gray-800 rounded-xl text-xs font-semibold text-gray-300 hover:text-white transition-all cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-purple-400' : ''}`} />
-              <span>Refresh Stats</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <span>Sync Index</span>
             </button>
 
-            <label className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-xl text-xs font-semibold text-white shadow-lg shadow-purple-900/20 transition-all cursor-pointer">
-              <Upload className="w-4 h-4" />
-              <span>{uploading ? 'Uploading & Indexing...' : 'Upload Document'}</span>
+            <label className={`flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-500 rounded-xl text-xs font-semibold text-white shadow-lg shadow-purple-600/20 transition-all cursor-pointer ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+              <Upload className="w-3.5 h-3.5" />
+              <span>{uploading ? 'Processing & Indexing...' : 'Upload Document'}</span>
               <input
                 type="file"
-                accept=".txt,.md,.pdf,.docx"
+                accept=".txt,.pdf,.docx,.md"
                 onChange={handleFileUpload}
                 disabled={uploading}
                 className="hidden"
@@ -145,34 +181,39 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
           </div>
         </div>
 
-        {/* Alerts */}
+        {/* Upload / Deletion Feedback Banner */}
         {uploadStatus && (
-          <div className={`p-4 rounded-xl border flex items-center justify-between text-sm ${uploadStatus.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-            }`}>
-            <div className="flex items-center gap-3">
+          <div className={`p-4 rounded-xl border flex items-center justify-between text-sm ${
+            uploadStatus.type === 'success' 
+              ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300' 
+              : 'bg-rose-950/20 border-rose-500/30 text-rose-300'
+          }`}>
+            <div className="flex items-center gap-2.5">
               {uploadStatus.type === 'success' ? (
-                <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
               ) : (
-                <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-400" />
+                <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
               )}
               <span>{uploadStatus.message}</span>
             </div>
-            <button onClick={() => setUploadStatus(null)} className="text-gray-400 hover:text-white text-xs">
+            <button 
+              onClick={() => setUploadStatus(null)}
+              className="text-xs opacity-60 hover:opacity-100 transition-opacity ml-4 cursor-pointer"
+            >
               Dismiss
             </button>
           </div>
         )}
 
+        {/* Global Error Banner */}
         {error && (
-          <div className="p-4 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-400 flex items-center gap-3 text-sm">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <span>{error}</span>
+          <div className="p-4 bg-rose-950/20 border border-rose-500/30 rounded-xl flex items-center gap-3 text-rose-300 text-sm">
+            <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0" />
+            <p>{error}</p>
           </div>
         )}
 
-        {/* Live Metrics Grid */}
+        {/* System Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-[#0F1424] border border-gray-800 rounded-2xl p-5 shadow-lg relative overflow-hidden group">
             <div className="flex items-center justify-between">
@@ -185,14 +226,14 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
               <span className="text-3xl font-extrabold text-white">
                 {loading ? '...' : stats?.document_count ?? 0}
               </span>
-              <span className="text-xs text-gray-500 block mt-1">Files loaded in data/</span>
+              <span className="text-xs text-gray-500 block mt-1">Source Files</span>
             </div>
           </div>
 
           <div className="bg-[#0F1424] border border-gray-800 rounded-2xl p-5 shadow-lg relative overflow-hidden group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Vector Chunks</span>
-              <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Embedded Vectors</span>
+              <div className="p-2.5 bg-blue-500/10 text-blue-400 rounded-xl">
                 <Layers className="w-5 h-5" />
               </div>
             </div>
@@ -265,6 +306,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
                     <th className="py-3 px-4">Chunk Count</th>
                     <th className="py-3 px-4">File Size</th>
                     <th className="py-3 px-4">Indexed Date</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800/60">
@@ -287,6 +329,20 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
                       </td>
                       <td className="py-3.5 px-4 text-gray-400 text-xs">
                         {new Date(doc.indexed_at).toLocaleString()}
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <button
+                          onClick={() => handleDeleteDocument(doc.filename)}
+                          disabled={deletingFile === doc.filename}
+                          title={`Permanently delete ${doc.filename}`}
+                          className="p-1.5 text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          {deletingFile === doc.filename ? (
+                            <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                        </button>
                       </td>
                     </tr>
                   ))}

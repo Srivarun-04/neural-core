@@ -1,5 +1,7 @@
-import { Bot, User, BookOpen, ExternalLink, AlertTriangle, Calculator, Wrench } from 'lucide-react';
+import { useState } from 'react';
+import { Bot, User, BookOpen, ExternalLink, AlertTriangle, Calculator, Wrench, Copy, Check } from 'lucide-react';
 import type { Message } from '../../types/chat';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface MessageItemProps {
   message: Message;
@@ -19,6 +21,17 @@ function getToolBadgeIcon(toolName: string) {
 export function MessageItem({ message }: MessageItemProps) {
   const isUser = message.role === 'user';
   const isError = message.isError;
+  const [copiedMessage, setCopiedMessage] = useState(false);
+
+  const handleCopyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopiedMessage(true);
+      setTimeout(() => setCopiedMessage(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy response:', err);
+    }
+  };
 
   return (
     <div className={`flex gap-4 p-4.5 rounded-xl border transition-all ${
@@ -48,7 +61,7 @@ export function MessageItem({ message }: MessageItemProps) {
       {/* Main Text Content */}
       <div className="flex-1 space-y-3 min-w-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-xs font-semibold ${
               isUser ? 'text-purple-400' : isError ? 'text-rose-400' : 'text-purple-400'
             }`}>
@@ -74,13 +87,42 @@ export function MessageItem({ message }: MessageItemProps) {
           <span className="text-[10px] text-gray-500">{message.timestamp}</span>
         </div>
         
-        <div className="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap break-words">
-          {message.content}
+        {/* Render Content */}
+        <div className="text-sm text-gray-200 leading-relaxed break-words">
+          {isUser || isError ? (
+            <div className="whitespace-pre-wrap">{message.content}</div>
+          ) : (
+            <MarkdownRenderer content={message.content} />
+          )}
         </div>
+
+        {/* AI Response Action Buttons Bar (Copy) */}
+        {!isUser && !isError && message.content && (
+          <div className="flex items-center justify-end pt-2 text-xs text-gray-500 border-t border-gray-800/40 mt-3">
+            <button
+              onClick={handleCopyMessage}
+              type="button"
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all cursor-pointer"
+              title="Copy entire response"
+            >
+              {copiedMessage ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-400 font-medium">Copied ✓</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* RAG Sources Citations Panel */}
         {!isUser && message.sources && message.sources.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-800/60 space-y-2">
+          <div className="mt-4 pt-3 border-t border-gray-800/60 space-y-2">
             <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-semibold tracking-wider uppercase">
               <BookOpen className="w-3.5 h-3.5" />
               <span>Reference Sources ({message.sources.length})</span>

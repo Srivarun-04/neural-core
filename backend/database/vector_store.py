@@ -32,8 +32,11 @@ class VectorStoreManager:
             return self.vector_store
         return None
 
-    def create_and_save(self, documents: List[Document]) -> FAISS:
+    def create_and_save(self, documents: List[Document]) -> Optional[FAISS]:
         """Creates a new FAISS vector store from documents and saves to disk."""
+        if not documents:
+            self.clear_index()
+            return None
         print(f"[FAISS] Creating new index from {len(documents)} document chunks...")
         self.vector_store = FAISS.from_documents(documents, self.embeddings)
         self.save_index()
@@ -44,6 +47,23 @@ class VectorStoreManager:
         if self.vector_store:
             self.vector_store.save_local(self.index_path)
             print(f"[FAISS] Index saved to disk at {self.index_path}")
+
+    def clear_index(self):
+        """Removes persisted FAISS index files and resets active vector store."""
+        self.vector_store = None
+        faiss_file = os.path.join(self.index_path, "index.faiss")
+        pkl_file = os.path.join(self.index_path, "index.pkl")
+        if os.path.exists(faiss_file):
+            try:
+                os.remove(faiss_file)
+            except Exception as e:
+                print(f"[FAISS] Error removing {faiss_file}: {e}")
+        if os.path.exists(pkl_file):
+            try:
+                os.remove(pkl_file)
+            except Exception as e:
+                print(f"[FAISS] Error removing {pkl_file}: {e}")
+        print(f"[FAISS] Index cleared from disk at {self.index_path}")
 
     def add_documents(self, documents: List[Document]):
         """Adds new documents to existing index and saves to disk."""

@@ -5,7 +5,7 @@ from backend.config.settings import SQLITE_DB_PATH
 
 class DatabaseManager:
     """
-    SQLite Database Manager for persisting Neural Core chats and message histories.
+    SQLite Database Manager for persisting Neural Core chats, message histories, and user feedback.
     """
 
     def __init__(self, db_path: str = SQLITE_DB_PATH):
@@ -41,7 +41,7 @@ class DatabaseManager:
                 );
             """)
 
-            # Create Messages Table
+            # Create Messages Table with feedback column
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS messages (
                     id TEXT PRIMARY KEY,
@@ -51,18 +51,27 @@ class DatabaseManager:
                     timestamp TEXT NOT NULL,
                     sources TEXT,
                     tools_used TEXT,
+                    feedback TEXT,
                     model TEXT,
                     latency REAL,
                     FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE
                 );
             """)
 
-            # Migration check: Ensure tools_used column exists for pre-existing tables
+            # Migration checks for existing databases
             try:
                 cursor.execute("SELECT tools_used FROM messages LIMIT 1;")
             except sqlite3.OperationalError:
                 try:
                     cursor.execute("ALTER TABLE messages ADD COLUMN tools_used TEXT;")
+                except Exception:
+                    pass
+
+            try:
+                cursor.execute("SELECT feedback FROM messages LIMIT 1;")
+            except sqlite3.OperationalError:
+                try:
+                    cursor.execute("ALTER TABLE messages ADD COLUMN feedback TEXT;")
                 except Exception:
                     pass
 
