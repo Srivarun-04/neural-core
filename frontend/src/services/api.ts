@@ -15,7 +15,8 @@ const DEFAULT_BACKEND_URL = 'http://localhost:8000';
 
 export class ApiService {
   private static getBackendUrl(): string {
-    return (import.meta.env.VITE_API_URL as string) || localStorage.getItem('backend_url') || DEFAULT_BACKEND_URL;
+    const url = (import.meta.env.VITE_API_URL as string) || localStorage.getItem('backend_url') || DEFAULT_BACKEND_URL;
+    return url.replace(/\/+$/, '');
   }
 
   // --- Session Management APIs (SQLite Persistence) ---

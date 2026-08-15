@@ -22,10 +22,16 @@ os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(VECTORSTORE_DIR, exist_ok=True)
 
 # RAG & Memory Settings
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-CHUNK_SIZE = 300
-CHUNK_OVERLAP = 50
-RETRIEVAL_K = 3
-LLM_MODEL = "openrouter/free"
-MEMORY_MAX_MESSAGES = 10
+EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "300"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))
+RETRIEVAL_K = int(os.getenv("RETRIEVAL_K", "3"))
+LLM_MODEL = os.getenv("LLM_MODEL", "openrouter/free")
+MEMORY_MAX_MESSAGES = int(os.getenv("MEMORY_MAX_MESSAGES", "10"))
+
+# Tool & Agent Settings
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY") or os.getenv("WEB_SEARCH_API_KEY") or ""
+SERPER_API_KEY = os.getenv("SERPER_API_KEY") or ""
+AGENT_MAX_ITERATIONS = int(os.getenv("AGENT_MAX_ITERATIONS", "5"))
+AGENT_TIMEOUT_SECONDS = int(os.getenv("AGENT_TIMEOUT_SECONDS", "30"))
 
