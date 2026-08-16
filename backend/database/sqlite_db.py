@@ -5,7 +5,7 @@ from backend.config.settings import SQLITE_DB_PATH
 
 class DatabaseManager:
     """
-    SQLite Database Manager for persisting Neural Core chats, message histories, and user feedback.
+    SQLite Database Manager for persisting NuraVault chats, message histories, and user feedback.
     """
 
     def __init__(self, db_path: str = SQLITE_DB_PATH):

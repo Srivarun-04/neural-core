@@ -37,7 +37,7 @@ def get_chat_router(
         chat_history = memory_service.get_formatted_history_text(chat_id)
 
         try:
-            # 3. Execute NeuralAgent (handles tool selection, RAG, calculator, web search)
+            # 3. Execute NeuralAgent (handles tool selection, RAG, calculator)
             ai_answer, sources_list, tools_used, agent_latency = agent.invoke(
                 question=question,
                 chat_history=chat_history

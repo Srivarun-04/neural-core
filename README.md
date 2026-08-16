@@ -1,10 +1,10 @@
-# Neural Core 🧠⚡
+# NuraVault 🛡️✨
 
-> **Production-Grade Personal AI Operating System & Conversational RAG Engine**
+> **Intelligent AI Knowledge Vault & Conversational Workspace powered by Agent Tool Calling, Hybrid RAG, and Persistent Memory**
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-18.2.0-61DAFB.svg?style=flat&logo=react)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![React 19](https://img.shields.io/badge/React-19.2.0-61DAFB.svg?style=flat&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2+-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![LangChain](https://img.shields.io/badge/LangChain-LCEL-1C3C3C.svg?style=flat)](https://www.langchain.com/)
 [![FAISS](https://img.shields.io/badge/FAISS-Persistent_Vector_Store-00599C.svg?style=flat)](https://github.com/facebookresearch/faiss)
 [![SQLite](https://img.shields.io/badge/SQLite-Session_Memory-003B57.svg?style=flat&logo=sqlite)](https://www.sqlite.org/)
@@ -12,65 +12,93 @@
 
 ---
 
-## 📌 Project Overview
+## 📌 Overview
 
-**Neural Core** is a production-ready, open-source personal AI Operating System designed to seamlessly synthesize **Retrieval-Augmented Generation (RAG)** across custom documents with **sliding-window conversational memory** and **real-time token streaming**. 
+**NuraVault** is a full-stack AI-powered knowledge and conversation workspace. It seamlessly combines **Retrieval-Augmented Generation (RAG)**, **autonomous tool calling**, **multi-session conversational memory**, and **real-time token streaming** into an elegant, decoupled React + FastAPI application.
 
-Unlike simple RAG prototypes that answer queries in isolation, Neural Core features persistent multi-session conversation tracking powered by SQLite, event-driven SSE streaming token delivery, persistent FAISS vector database indexing, and an intuitive ChatGPT-inspired React workspace.
+Unlike simple chatbot wrappers that hallucinate calculations or answer queries without context, NuraVault connects an advanced Large Language Model to:
+1. **Private Document Storage**: Ingest, chunk, embed, and semantically retrieve context from PDFs, Word docs, Markdown, and text files.
+2. **Built-in System Knowledge**: Canonical internal documentation describing NuraVault's own architecture that is always indexed and protected.
+3. **Safe Mathematical Tool**: An AST-based, injection-safe mathematical evaluator for precision arithmetic, percentages, and conversions.
+4. **Relational Conversation Memory**: Multi-session SQLite database tracking chats, messages, citations, tool executions, and user feedback across restarts.
+
+> [!NOTE]
+> **Project Scope**: NuraVault is designed as a clean, self-hosted, open-source AI portfolio application. It demonstrates solid engineering practices for local RAG, tool calling, and streaming UX without requiring paid enterprise infrastructure.
 
 ---
 
 ## ✨ Key Features
 
-### 🧠 Backend & AI Pipeline
-- **Multi-Document RAG Engine**: Indexes `.pdf`, `.txt`, `.md`, `.doc`, and `.csv` files using local HuggingFace embeddings (`sentence-transformers/all-MiniLM-L6-v2`) and persistent FAISS.
-- **SQLite Conversational Memory**: Full multi-session persistence for chat threads and message history that survives backend restarts.
-- **Sliding-Window Memory Strategy**: Maintains a configurable window ($N=10$) of recent turns to give the LLM natural conversational recall without context window exhaustion.
-- **Server-Sent Events (SSE) Token Streaming**: Real-time token streaming (`POST /chat/stream`) yielding continuous response tokens for low-latency ChatGPT-like UX.
-- **Hybrid RAG & General Knowledge Synthesis**: Upgraded prompt engineering that prioritizes document context when available while gracefully answering general conversational queries.
-- **Dynamic File Ingestion & Metadata Manifest**: Live file sync, duplicate hashing (SHA-256), chunk tracking, and instant document status REST endpoints.
+### 🧠 AI Engine & Backend Architecture
+- **Autonomous Tool-Calling Agent**: Evaluates user prompts to determine whether to answer directly, perform semantic knowledge search, or execute mathematical computations.
+- **Hybrid RAG Pipeline**: Ingests documents with LangChain text splitters, generates 384-dimensional dense vectors using local Hugging Face `sentence-transformers/all-MiniLM-L6-v2`, and retrieves top-$k$ matches with Meta FAISS.
+- **Canonical System Knowledge**: Global, immutable, read-only documentation (`backend/knowledge/system_knowledge.md`) automatically indexed on startup.
+- **Safe Calculator Tool (`calculator_tool`)**: AST-based evaluation engine supporting arithmetic, percentages, powers, factorial, square roots, and unit conversions without unsafe `eval()` execution.
+- **Multi-Turn SQLite Memory**: Persistent session tracking storing full conversation history, citations, tool badges, and latency metrics in `vectorstore/brain_memory.db`.
+- **Server-Sent Events (SSE) Streaming**: Low-latency token-by-token streaming with real-time tool status badges (`"Searching knowledge base..."`, `"Calculating..."`).
+- **Complete Document Lifecycle**: Dynamic document upload, instant chunk indexing, SHA-256 change detection, and clean FAISS index reconstruction upon document deletion.
 
-### 🎨 Frontend & User Interface
-- **ChatGPT-Style Workspace**: Modern dark-themed interface built with React 18, TypeScript, Tailwind CSS, and Lucide Icons.
-- **Multi-Session Sidebar**: Create, select, rename, and delete conversation threads directly from the sidebar.
-- **Streaming Response Render**: Token-by-token live stream rendering with real-time *"Neural Core is thinking..."* typing indicators.
-- **Knowledge Base Dashboard**: System status panel showing document counts, total index chunks, vector store health, and uploaded files.
-- **Optimized Connection Management**: Visibility-aware passive health status management (60s background ping, auto-pause on tab hide, focus refresh).
+### 🎨 Frontend & User Experience
+- **Modern React 19 Workspace**: Built with TypeScript, Vite 8, Tailwind CSS v4, Lucide React, and React-Markdown.
+- **Dual Theme Support (Dark & Light)**: Curated dark mode and off-white/light-gray surface hierarchy with zero-flash localStorage theme persistence.
+- **Interactive Sidebar Session Manager**: Create new conversations, search chats, inline rename, and delete sessions.
+- **Knowledge Base Dashboard**: Real-time vault metrics (document counts, indexed chunks, embedding status), drag-and-drop file uploader, and individual document deletion.
+- **Rich Message Cards & Code Blocks**: Clean GitHub-flavored Markdown rendering, syntax-highlighted code containers with one-click copy, and expandable source citation snippets.
+- **AI Response Actions**: One-click response copying and 👍 / 👎 user feedback controls with persistent state.
 
 ---
 
 ## 🏗️ System Architecture
 
 ```
-+-----------------------------------------------------------------------------------+
-|                                 React Frontend                                    |
-|  +-------------------------+  +------------------------------------------------+  |
-|  |  Sidebar Session Mgr    |  |  Chat Workspace (SSE Streaming UI)             |  |
-|  | (Create/Rename/Delete)  |  |  - Token-by-token live rendering               |  |
-|  | (Active Chat Highlight) |  |  - "Neural Core is thinking..." Indicator     |  |
-|  +-------------------------+  +------------------------------------------------+  |
-+--------------------------------------|--------------------------------------------+
-                                       | REST APIs & SSE Stream (/chat/stream)
-+--------------------------------------v--------------------------------------------+
-|                               FastAPI Backend                                     |
-|  +---------------------+  +----------------------+  +--------------------------+  |
-|  |  Chat API Router    |  |  Chats API Router    |  | Health & Upload Routers  |  |
-|  +----------|----------+  +----------|-----------+  +--------------------------+  |
-|             |                        |                                            |
-|  +----------v------------------------v-----------------------------------------+  |
-|  |                    Services Layer (Clean Architecture)                      |  |
-|  |  +-----------------------+  +-------------------+  +---------------------+  |  |
-|  |  |  ConversationService  |  |   MemoryService   |  |      RAGChain       |  |  |
-|  |  |  (SQLite DB Manager)  |  | (Sliding Window N)|  | (Streaming LLM LCEL)|  |  |
-|  |  +-----------|-----------+  +---------|---------+  +----------|----------+  |  |
-|  +--------------|------------------------|-----------------------|-------------+  |
-+-----------------|------------------------|-----------------------|----------------+
-                  |                        |                       |
-                  v                        v                       v
-         +-----------------+      +-----------------+     +-----------------+
-         | SQLite Database |      | Conversation H. |     | FAISS Vector DB |
-         | (chats/messages)|      | Formatted Text  |     | & OpenRouter    |
-         +-----------------+      +-----------------+     +-----------------+
+                                      CLIENT LAYER
+                   ┌─────────────────────────────────────────────────┐
+                   │         React 19 + TypeScript + Vite            │
+                   │  ├── Chat Workspace (SSE Streaming + Badges)    │
+                   │  ├── Knowledge Base (File Uploads & Stats)      │
+                   │  └── Sidebar Session Manager (Multi-Chat)       │
+                   └────────────────────────┬────────────────────────┘
+                                            │ HTTP / SSE (/chat/stream)
+                                            ▼
+                                     BACKEND LAYER
+                   ┌─────────────────────────────────────────────────┐
+                   │             FastAPI Asynchronous API            │
+                   │  ├── /chat & /chat/stream (Agent & LLM)         │
+                   │  ├── /chats (SQLite Session CRUD)               │
+                   │  ├── /documents & /upload (Document Lifecycle)  │
+                   │  └── /health & /stats (System Diagnostics)      │
+                   └───────┬─────────────────┬────────────────┬──────┘
+                           │                 │                │
+            ┌──────────────┴────────┐        │                │
+            ▼                       ▼        ▼                ▼
+   ┌─────────────────┐    ┌───────────┐ ┌──────────┐ ┌─────────────────┐
+   │ OpenRouter LLM  │    │ Safe Calc │ │  FAISS   │ │ SQLite Database │
+   │ (ChatOpenAI)    │    │  (AST)    │ │ Vectors  │ │ brain_memory.db │
+   └─────────────────┘    └───────────┘ └──────────┘ └─────────────────┘
+```
+
+---
+
+## 🔄 End-to-End RAG & Tool Execution Flow
+
+```
+User Prompt
+    │
+    ▼
+FastAPI SSE Endpoint (/chat/stream)
+    │
+    ▼
+NeuralAgent Orchestrator
+    ├──> Direct Reasoning (Greetings, Conceptual Qs, Memory Recall) ──> Stream LLM
+    │
+    ├──> Math Expression Detected ──> Calculator Tool (AST Evaluator) ──> Stream LLM
+    │
+    └──> Knowledge / Vault Query Detected
+             │
+             ├──> Embed Query (sentence-transformers/all-MiniLM-L6-v2)
+             ├──> FAISS Vector Retrieval (Top-k Similarity Search)
+             ├──> Context Assembly (System Knowledge + User Documents)
+             └──> Augmented Prompt Synthesis ──> Stream LLM Token Delivery
 ```
 
 ---
@@ -78,161 +106,200 @@ Unlike simple RAG prototypes that answer queries in isolation, Neural Core featu
 ## 🛠️ Technology Stack
 
 | Domain | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Backend Framework** | FastAPI (Python 3.10+) | High-performance asynchronous REST API server |
-| **LLM Orchestration** | LangChain (LCEL) | Prompt templates, output parsing, and model pipelines |
-| **Embeddings** | HuggingFace `all-MiniLM-L6-v2` | Fast, high-quality local dense vector embeddings |
-| **LLM Gateway** | OpenRouter API (`ChatOpenAI`) | Multi-model streaming LLM inference |
-| **Vector Database** | FAISS | Persistent local similarity search index |
-| **Database** | SQLite3 | Session and message history persistence |
-| **Frontend Framework**| React 18 + TypeScript + Vite | Type-safe, fast interactive user interface |
-| **Styling & UI** | Tailwind CSS + Lucide Icons | Premium glassmorphic dark-theme aesthetics |
+|---|---|---|
+| **Backend Framework** | FastAPI + Uvicorn | Asynchronous REST and Server-Sent Events API |
+| **Agent & RAG** | LangChain (LCEL) | Agent tool orchestration and RAG chain assembly |
+| **Embeddings** | Hugging Face `all-MiniLM-L6-v2` | Local, fast 384-dimensional dense embeddings |
+| **Vector Store** | Meta FAISS (CPU) | Persistent local vector index for similarity search |
+| **Relational Database** | SQLite3 | Multi-session chat history and feedback persistence |
+| **LLM Gateway** | OpenRouter (`ChatOpenAI`) | Multi-model streaming LLM inference |
+| **Frontend Framework** | React 19 + TypeScript + Vite | Type-safe, fast single-page application |
+| **Styling & Icons** | Tailwind CSS v4 + Lucide React | Modern glassmorphic theme system & icons |
+| **Markdown & Code** | React-Markdown + Remark-GFM | Formatted tables, quotes, lists, and code blocks |
 
 ---
 
-## 📁 Repository Structure
+## 📁 Project Structure
 
 ```
 rag/
 ├── backend/
+│   ├── agents/               # Autonomous agent & system prompts
+│   │   ├── neural_agent.py   # Tool-calling agent orchestrator
+│   │   └── prompts.py        # System prompts and tool routing rules
 │   ├── api/                  # FastAPI router endpoints
 │   │   ├── chat.py           # Synchronous & SSE streaming chat routes
 │   │   ├── chats.py          # Session management CRUD routes
-│   │   ├── documents.py      # Indexed documents list API
-│   │   ├── health.py         # System health endpoint
-│   │   └── upload.py         # File upload & live indexing endpoint
-│   ├── config/               # Configuration settings & environment variables
-│   │   └── settings.py
-│   ├── database/             # Database managers
-│   │   ├── sqlite_db.py      # SQLite connection & table schemas
-│   │   └── vector_store.py   # FAISS persistence & retrieval manager
-│   ├── models/               # Pydantic request/response schemas
-│   │   └── schemas.py
+│   │   ├── documents.py      # Document listing, stats, and delete routes
+│   │   ├── health.py         # Diagnostic health-check route
+│   │   └── upload.py         # File ingestion & upload route
+│   ├── config/
+│   │   └── settings.py       # Central environment & path configuration
+│   ├── database/
+│   │   ├── sqlite_db.py      # SQLite connection manager & schema migrations
+│   │   └── vector_store.py   # FAISS persistence & retriever interface
+│   ├── knowledge/
+│   │   └── system_knowledge.md # Canonical NuraVault internal documentation
+│   ├── models/
+│   │   └── schemas.py        # Pydantic request/response schemas
 │   ├── rag/                  # RAG components
-│   │   ├── chain.py          # LCEL RAG chain with streaming support
-│   │   ├── embeddings.py     # HuggingFace embeddings loader
-│   │   ├── loaders.py        # Multi-format document loader factory
-│   │   └── splitter.py       # Text chunker & metadata enricher
-│   └── services/             # Core business logic services
-│       ├── conversation_service.py # SQLite session & message CRUD
-│       ├── document_manager.py     # Directory scanner & indexing pipeline
-│       └── memory_service.py       # Sliding-window conversation context
-├── data/                     # Raw document storage directory
-├── vectorstore/              # FAISS index files & SQLite database
-│   ├── brain_memory.db
-│   ├── index.faiss
-│   ├── index.pkl
-│   └── manifest.json
-├── frontend/                 # Vite + React + TypeScript workspace
+│   │   ├── chain.py          # Streaming LCEL prompt & LLM chain
+│   │   ├── embeddings.py     # Hugging Face embeddings loader
+│   │   ├── loaders.py        # PDF, DOCX, TXT, and Markdown file loaders
+│   │   └── splitter.py       # RecursiveCharacterTextSplitter with metadata
+│   ├── services/             # Core business logic services
+│   │   ├── conversation_service.py # SQLite chat & message operations
+│   │   ├── document_manager.py     # Ingestion lifecycle & manifest tracker
+│   │   └── memory_service.py       # Sliding-window context memory formatting
+│   └── tools/                # Tool implementations
+│       ├── base.py           # ToolRegistry & ExecutionContext
+│       ├── calculator_tool.py# AST-based safe mathematical evaluator
+│       └── rag_tool.py       # Knowledge base semantic search tool
+│
+├── data/                     # Local document storage directory
+│   └── notes.txt             # Sample document (Acme Remote Work Policy)
+│
+├── frontend/                 # React 19 + TypeScript SPA
+│   ├── public/               # Branding assets (favicon.svg, logo.svg)
 │   ├── src/
-│   │   ├── components/       # UI Components (ChatArea, Sidebar, Navbar, etc.)
-│   │   ├── hooks/            # Custom React hooks (useChat.ts)
-│   │   ├── services/         # API Service client (api.ts)
-│   │   ├── types/            # TypeScript interfaces (chat.ts)
-│   │   └── utils/            # Local storage utilities (storage.ts)
-│   ├── package.json
-│   └── vite.config.ts
-├── .env.example              # Environment variables template
-├── .gitignore                # Production ignore patterns
-├── main.py                   # FastAPI server entry point
+│   │   ├── components/       # UI Components (Chat, Sidebar, KnowledgeBase, Header, Message)
+│   │   ├── hooks/            # Custom React hooks (useChat)
+│   │   ├── services/         # API Service (REST & SSE parser)
+│   │   ├── types/            # TypeScript interfaces & types
+│   │   └── utils/            # Local storage & helper utilities
+│   ├── index.html            # Main HTML shell with zero-flash theme script
+│   ├── package.json          # Frontend dependencies
+│   └── vite.config.ts        # Vite configuration
+│
+├── tests/                    # Backend automated unit test suite (29 tests)
+│   ├── test_agent.py         # Agent tool registry & health tests
+│   ├── test_calculator.py    # Calculator arithmetic & AST injection security tests
+│   ├── test_chats.py         # Session management CRUD tests
+│   ├── test_documents.py     # Document upload, listing, and delete tests
+│   ├── test_health.py        # Health endpoint diagnostics tests
+│   ├── test_memory.py        # Sliding-window memory tests
+│   ├── test_rag_tool.py      # RAG retriever tool invocation tests
+│   └── test_system_knowledge.py # Canonical system knowledge lifecycle tests
+│
+├── .env.example              # Template environment variable configuration
+├── .gitignore                # Git ignore rules for secrets, DBs, and indexes
+├── main.py                   # FastAPI application root entrypoint
+├── requirements.txt          # Python runtime dependencies
 └── README.md                 # Project documentation
 ```
 
 ---
 
-## 🔄 RAG & Conversational Memory Workflow
-
-1. **Document Ingestion**: Files uploaded via the `/upload` API or placed in `data/` are loaded, chunked ($300$ chars, $50$ overlap), enriched with metadata, and embedded using `all-MiniLM-L6-v2`.
-2. **Vector Indexing**: Chunks are stored in FAISS and saved to disk alongside `manifest.json`.
-3. **Session Querying**: When a user submits a prompt, `ConversationService` saves the message to SQLite and retrieves the last $N=10$ turns via `MemoryService`.
-4. **Vector Retrieval**: FAISS retrieves top-$k$ ($k=3$) relevant document chunks.
-5. **Streaming Generation**: Prompt template synthesizes history + context + question and streams tokens to the client over Server-Sent Events (SSE).
-6. **Persistence**: The full assistant response, citations, model metadata, and latency are committed to SQLite.
-
----
-
-## 🔌 API Endpoints Summary
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | Health status and vector DB readiness check |
-| `GET` | `/chats` | List all conversation sessions |
-| `POST` | `/chats` | Create a new conversation session |
-| `GET` | `/chats/{chat_id}` | Fetch session details and complete message history |
-| `PATCH` | `/chats/{chat_id}` | Rename a conversation session |
-| `DELETE` | `/chats/{chat_id}` | Delete a conversation session |
-| `POST` | `/chat` | Synchronous RAG query endpoint |
-| `POST` | `/chat/stream` | **SSE Streaming** token response endpoint |
-| `GET` | `/documents` | List indexed document metadata and chunk stats |
-| `POST` | `/upload` | Upload new document for instant indexing |
-| `GET` | `/stats` | System metrics for Knowledge Base dashboard |
-
----
-
-## 🚀 Installation & Local Setup
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- Python 3.10+
-- Node.js 18+ and `npm`
+- **Python 3.10+** (Python 3.11 / 3.12 recommended)
+- **Node.js 18+** & **npm**
+- **OpenRouter API Key** (Free key available at [OpenRouter.ai](https://openrouter.ai/keys))
 
-### 1. Backend Setup
+---
+
+### Step 1: Clone Repository & Setup Backend
+
 ```bash
-# Clone repository
+# 1. Clone the repository
 git clone https://github.com/Srivarun-04/neural-core.git
 cd neural-core
 
-# Create virtual environment
+# 2. (Optional) Create and activate a virtual environment
 python -m venv venv
 # On Windows:
-venv\Scripts\activate
+.\venv\Scripts\activate
 # On macOS/Linux:
 source venv/bin/activate
 
-# Install dependencies
-pip install fastapi uvicorn langchain langchain-openai langchain-community sentence-transformers faiss-cpu python-dotenv pydantic requests
+# 3. Install backend dependencies
+pip install -r requirements.txt
 
-# Create .env file from template
+# 4. Configure environment variables
 cp .env.example .env
 ```
 
-Configure your `.env` file:
-```ini
-OPENROUTER_API_KEY=your_openrouter_api_key_here
+Open `.env` in your editor and add your OpenRouter API Key:
+```env
+OPENROUTER_API_KEY=sk-or-v1-your-key-here
 PORT=8000
-HOST=127.0.0.1
+HOST=0.0.0.0
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
-Start the backend server:
-```bash
-python main.py
-```
-The backend API will be live at `http://localhost:8000` (API Docs at `http://localhost:8000/docs`).
+---
 
-### 2. Frontend Setup
+### Step 2: Start Backend Server
+
 ```bash
-# Navigate to frontend directory
+python -m uvicorn main:app --reload --port 8000
+```
+- **Backend API**: `http://localhost:8000`
+- **Interactive Swagger Docs**: `http://localhost:8000/docs`
+
+---
+
+### Step 3: Setup & Start Frontend
+
+Open a new terminal window:
+
+```bash
+# 1. Navigate to frontend directory
 cd frontend
 
-# Install dependencies
+# 2. Install frontend dependencies
 npm install
 
-# Start Vite development server
+# 3. Configure environment variables (optional, defaults to http://localhost:8000)
+cp .env.example .env
+
+# 4. Start the development server
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
+
+Open your browser at:
+👉 **`http://localhost:5173`**
 
 ---
 
-## 🔮 Future Roadmap
+## 🧪 Testing
 
-- 🛠️ **Tool Calling & Agents**: Expand RAG into autonomous agentic workflows using LangChain / LangGraph.
-- 🌐 **Web Search Integration**: Fallback web search for queries outside indexed documents.
-- 💻 **Code Execution Sandbox**: Isolated Python runtime execution for computational queries.
-- 🖼️ **Multimodal Vision**: Support for image understanding and document OCR.
-- 💾 **Long-Term Memory Engine**: Hierarchical memory summarization across historical sessions.
+NuraVault includes a comprehensive automated test suite covering all services, tools, RAG retrievers, and security boundaries.
+
+Run the test suite:
+```bash
+python -u -m unittest discover -s tests -p "test_*.py"
+```
+
+Verify frontend build:
+```bash
+cd frontend
+npm run build
+```
 
 ---
 
-## 📄 License
+## 🛡️ Design & Engineering Decisions
 
-Distributed under the MIT License. See `LICENSE` for more information.
+1. **Why Local Embeddings (`sentence-transformers/all-MiniLM-L6-v2`)?**
+   Embeddings run locally on CPU with zero per-vector cost, low latency, and no API rate-limit bottlenecks.
+2. **Why FAISS?**
+   Meta FAISS provides fast, memory-efficient in-process vector similarity search that serializes easily to disk for standalone development.
+3. **Why AST for Calculator?**
+   Evaluating math expressions via Python `eval()` poses severe Remote Code Execution (RCE) risks. NuraVault uses Python's Abstract Syntax Tree (`ast.parse`) with strict node whitelisting to guarantee mathematical safety.
+4. **Why Server-Sent Events (SSE)?**
+   SSE provides unidirectional HTTP streaming that works natively with standard HTTP/HTTPS firewalls, supports event typed payloads (`init`, `status`, `token`, `done`, `error`), and requires less connection overhead than WebSockets.
+
+---
+
+## ⚠️ Known Limitations
+
+- **Single-Tenant Local Storage**: Documents and SQLite sessions are stored locally on disk; horizontal multi-instance scaling requires cloud object storage (S3) and an external vector database (Qdrant/Pinecone).
+- **No Live Web Browsing**: NuraVault answers queries based on conversational history, built-in system knowledge, and uploaded documents. It does not perform live internet scraping.
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.

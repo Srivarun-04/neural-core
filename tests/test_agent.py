@@ -47,7 +47,7 @@ class TestNeuralAgent(unittest.TestCase):
         res = self.client.get("/health")
         self.assertEqual(res.status_code, 200)
         data = res.json()
-        self.assertEqual(data["version"], "0.4")
+        self.assertEqual(data["version"], "1.0.0")
         self.assertIn("calculator_tool", data["tools"])
         self.assertIn("knowledge_base_search", data["tools"])
         self.assertNotIn("web_search", data["tools"])

@@ -1,5 +1,5 @@
-# Neural Core — Master Technical Architecture & System Documentation
-**Document Version:** 1.0.0 (Neural Core v0.4 Release)  
+# NuraVault — Master Technical Architecture & System Documentation
+**Document Version:** 1.0.0 (NuraVault Release)  
 **Classification:** Internal Technical Architecture & Engineering Reference  
 **Last Updated:** August 2026  
 
@@ -60,10 +60,10 @@
 ## 1. Project Overview
 
 ### Non-Technical Explanation
-**Neural Core** is an intelligent, full-stack AI Assistant and Knowledge Engine. Unlike basic chatbots that only possess static knowledge and can guess numbers inaccurately or hallucinate when asked about personal files, Neural Core connects an advanced Large Language Model to your private documents and specialized tools. Users can upload PDFs, text documents, Word files, or Markdown notes, converse naturally with conversational memory across multiple distinct chat sessions, perform complex exact mathematical computations via a safe execution engine, and stream responses in real time with visual citations and code formatting.
+**NuraVault** is an intelligent, full-stack AI Assistant and Knowledge Engine. Unlike basic chatbots that only possess static knowledge and can guess numbers inaccurately or hallucinate when asked about personal files, NuraVault connects an advanced Large Language Model to your private documents and specialized tools. Users can upload PDFs, text documents, Word files, or Markdown notes, converse naturally with conversational memory across multiple distinct chat sessions, perform complex exact mathematical computations via a safe execution engine, and stream responses in real time with visual citations and code formatting.
 
 ### Technical Explanation
-Neural Core is a production-oriented, decoupled AI application combining a modern **React 19 + TypeScript + Vite + Tailwind CSS** single-page application with a high-performance **FastAPI (Python 3.10+)** asynchronous backend. 
+NuraVault is a production-oriented, decoupled AI application combining a modern **React 19 + TypeScript + Vite + Tailwind CSS** single-page application with a high-performance **FastAPI (Python 3.10+)** asynchronous backend. 
 
 The core intelligence layer implements an autonomous **Tool-Calling Agent** powered by LangChain and OpenRouter. It integrates:
 1. **Multi-Document Retrieval-Augmented Generation (RAG)** using local HuggingFace embeddings (`sentence-transformers/all-MiniLM-L6-v2`, 384-dimensional dense vectors) and a persisted **FAISS** vector store.
@@ -90,21 +90,21 @@ The core intelligence layer implements an autonomous **Tool-Calling Agent** powe
 
 ## 2. Project Evolution
 
-Neural Core was engineered iteratively through distinct phases to bridge foundational AI concepts into a production-grade application:
+NuraVault was engineered iteratively through distinct phases to bridge foundational AI concepts into a production-grade application:
 
 ```
 [Phase 0: Raw LLM Script]
-       │
-       ▼
+       â”‚
+       â–¼
 [Phase 1: Prompt Templates & Input Validation]
-       │
-       ▼
+       â”‚
+       â–¼
 [Phase 2: RAG Pipeline with Embeddings & FAISS]
-       │
-       ▼
+       â”‚
+       â–¼
 [Phase 3: Multi-Document Management & SQLite Memory]
-       │
-       ▼
+       â”‚
+       â–¼
 [Phase 4: Tool-Calling Agent Layer & Full-Stack SSE UI]
 ```
 
@@ -113,7 +113,7 @@ Neural Core was engineered iteratively through distinct phases to bridge foundat
 3. **Retrieval-Augmented Generation (RAG)**: Solved the context boundary problem by implementing document loading, recursive character chunking, local dense embeddings (`all-MiniLM-L6-v2`), and a FAISS vector index.
 4. **Persistent Multi-Chat & Memory**: Replaced in-memory dictionaries with an ACID-compliant SQLite relational database (`brain_memory.db`) implementing a sliding-window memory retriever to retain conversation history across restarts.
 5. **FastAPI Modular API Architecture**: Wrapped services into RESTful endpoints with Pydantic v2 data validation schemas, lifespan startup sync, and CORS middleware.
-6. **Agent & Tool Routing Architecture**: Transformed static RAG into an autonomous Tool-Calling Agent. The LLM evaluates user intent dynamically—routing math to an AST calculator, document queries to the FAISS RAG retriever, and general conversational greetings directly to generation without invoking tools.
+6. **Agent & Tool Routing Architecture**: Transformed static RAG into an autonomous Tool-Calling Agent. The LLM evaluates user intent dynamicallyâ€”routing math to an AST calculator, document queries to the FAISS RAG retriever, and general conversational greetings directly to generation without invoking tools.
 7. **Production Frontend & Real-Time SSE**: Built a modern React UI with Tailwind CSS, Server-Sent Events (SSE) parsing, live status thinking indicators, tool badges, and ChatGPT-style syntax code blocks.
 
 ---
@@ -125,53 +125,53 @@ Neural Core was engineered iteratively through distinct phases to bridge foundat
                                   |            React 19 Frontend          |
                                   | (Vite, TypeScript, Tailwind, Lucide) |
                                   +---------------------------------------+
-                                           │                     ▲
-                      POST /chat/stream    │                     │  SSE Tokens & Statuses
-                      POST /upload         │                     │  JSON Metadata
-                      DELETE /documents    │                     │
-                                           ▼                     │
-                     +─────────────────────────────────────────────────────────+
+                                           â”‚                     â–²
+                      POST /chat/stream    â”‚                     â”‚  SSE Tokens & Statuses
+                      POST /upload         â”‚                     â”‚  JSON Metadata
+                      DELETE /documents    â”‚                     â”‚
+                                           â–¼                     â”‚
+                     +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
                      |                 FastAPI Application Server              |
                      |  (Lifespan Management, CORS Middleware, Error Handling) |
-                     +─────────────────────────────────────────────────────────+
-                                           │                     │
-                ┌──────────────────────────┘                     └───────────────────────────┐
-                ▼                                                                            ▼
-+──────────────────────────────+                                            +────────────────────────────────+
+                     +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
+                                           â”‚                     â”‚
+                â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                     â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                â–¼                                                                            â–¼
++â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+                                            +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
 |   Conversation / Memory API  |                                            |    Document / Knowledge API    |
 | (SQLite: chats & messages)   |                                            | (Upload, Index, Purge, Stats)  |
-+──────────────────────────────+                                            +────────────────────────────────+
-                │                                                                            │
-                ▼                                                                            ▼
-+──────────────────────────────+                                            +────────────────────────────────+
++â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+                                            +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
+                â”‚                                                                            â”‚
+                â–¼                                                                            â–¼
++â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+                                            +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
 |     Memory Service Layer     |                                            |    Document Manager Service    |
 |   (Sliding Window k=10)      |                                            | (SHA-256 Hash, Manifest, Load) |
-+──────────────────────────────+                                            +────────────────────────────────+
-                │                                                                            │
-                │                                                                            │
-                ▼                                                                            ▼
-+────────────────────────────────────────────────────────────────────────────────────────────────────────────+
++â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+                                            +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
+                â”‚                                                                            â”‚
+                â”‚                                                                            â”‚
+                â–¼                                                                            â–¼
++â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
 |                                           Neural Agent Layer                                               |
 |                    (LangChain ChatOpenAI + Tool Binding + Stream Event Generator)                          |
-+────────────────────────────────────────────────────────────────────────────────────────────────────────────+
-                         │                                           │
-                         ▼                                           ▼
-          +──────────────────────────────+           +───────────────────────────────+
++â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
+                         â”‚                                           â”‚
+                         â–¼                                           â–¼
+          +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
           |      Safe Calculator Tool    |           |     Knowledge Base RAG Tool   |
           |  (AST Syntax Tree Evaluator) |           |  (Vector Store Retriever k=3) |
-          +──────────────────────────────+           +───────────────────────────────+
-                                                                     │
-                                                                     ▼
-                                                     +───────────────────────────────+
+          +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
+                                                                     â”‚
+                                                                     â–¼
+                                                     +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
                                                      |    FAISS Vector Store Manager |
                                                      | (index.faiss + index.pkl on disk)
-                                                     +───────────────────────────────+
-                                                                     │
-                                                                     ▼
-                                                     +───────────────────────────────+
+                                                     +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
+                                                                     â”‚
+                                                                     â–¼
+                                                     +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
                                                      |  HuggingFace Embedding Model  |
                                                      | (sentence-transformers MiniLM)|
-                                                     +───────────────────────────────+
+                                                     +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+
 ```
 
 ---
@@ -200,91 +200,91 @@ Neural Core was engineered iteratively through distinct phases to bridge foundat
 ## 5. Complete Repository Structure
 
 ```
-neural-core/
-├── backend/
-│   ├── agents/
-│   │   ├── __init__.py           # Agent module exports
-│   │   ├── neural_agent.py       # NeuralAgent class, tool binding, and stream event generator
-│   │   └── prompts.py            # SYSTEM_AGENT_PROMPT and routing instructions
-│   ├── api/
-│   │   ├── __init__.py           # API package initialization
-│   │   ├── chat.py               # POST /chat and POST /chat/stream endpoints
-│   │   ├── chats.py              # CRUD endpoints for /chats and /chats/{id}/messages
-│   │   ├── documents.py          # GET /documents, GET /stats, and DELETE /documents/{filename}
-│   │   ├── health.py             # GET /health and GET / endpoints
-│   │   └── upload.py             # POST /upload multipart document file endpoint
-│   ├── config/
-│   │   ├── __init__.py           # Config package initialization
-│   │   └── settings.py           # Environment variables, directory paths, and default hyperparameters
-│   ├── database/
-│   │   ├── __init__.py           # Database package initialization
-│   │   ├── sqlite_db.py          # DatabaseManager class for SQLite initialization & migrations
-│   │   └── vector_store.py       # VectorStoreManager class for FAISS load/save/clear/search
-│   ├── models/
-│   │   ├── __init__.py           # Models package initialization
-│   │   └── schemas.py            # Pydantic v2 schemas (Message, Chat, DocumentInfo, Source, Stats)
-│   ├── rag/
-│   │   ├── __init__.py           # RAG package initialization
-│   │   ├── embeddings.py         # HuggingFaceEmbeddings singleton factory
-│   │   ├── loaders.py            # DocumentLoaderFactory for PDF, DOCX, TXT, MD
-│   │   └── splitter.py           # DocumentSplitter using RecursiveCharacterTextSplitter
-│   ├── services/
-│   │   ├── __init__.py           # Services package initialization
-│   │   ├── conversation_service.py # SQLite CRUD operations for chats and messages
-│   │   ├── document_manager.py   # DocumentManager lifecycle (manifest tracking, indexing, purging)
-│   │   └── memory_service.py     # Sliding window conversation memory provider
-│   └── tools/
-│       ├── __init__.py           # Tool exports
-│       ├── base.py               # ToolRegistry, ToolExecutionContext, ToolExecutionRecord, metadata
-│       ├── calculator_tool.py    # Safe AST calculator tool and mathematical evaluator
-│       └── rag_tool.py           # RAGSearchTool wrapping FAISS vector retriever
-├── data/                         # Uploaded documents directory (.txt, .pdf, .docx, .md)
-├── docs/                         # Master technical documentation
-├── frontend/
-│   ├── public/                   # Static browser assets
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Chat/
-│   │   │   │   └── ChatArea.tsx  # Message stream container, welcome screen, tool status banner
-│   │   │   ├── Header/
-│   │   │   │   └── Navbar.tsx    # Header, view switchers, health indicator, backend settings
-│   │   │   ├── Input/
-│   │   │   │   └── MessageInput.tsx # Auto-resizing textarea with keyboard submission
-│   │   │   ├── KnowledgeBase/
-│   │   │   │   └── KnowledgeBase.tsx # Vector stats cards, document table, upload & delete UI
-│   │   │   ├── Message/
-│   │   │   │   ├── CodeBlock.tsx # ChatGPT-style code blocks with header & copy button
-│   │   │   │   ├── MarkdownRenderer.tsx # ReactMarkdown with remark-gfm parser
-│   │   │   │   └── MessageItem.tsx # Chat bubble with tools badges, citations, copy action
-│   │   │   └── Sidebar/
-│   │   │       └── Sidebar.tsx   # Chat sessions sidebar, rename/delete/create controls
-│   │   ├── hooks/
-│   │   │   └── useChat.ts        # Primary conversation lifecycle & SSE streaming hook
-│   │   ├── services/
-│   │   │   └── api.ts            # Client HTTP & SSE streaming service
-│   │   ├── types/
-│   │   │   └── chat.ts           # TypeScript interfaces (Message, RAGSource, Conversation)
-│   │   ├── utils/
-│   │   │   └── storage.ts        # LocalStorage helpers for backend configuration
-│   │   ├── App.tsx               # Root view router, modal manager, connection heartbeat
-│   │   ├── index.css             # Tailwind CSS tokens, scrollbar styling, animations
-│   │   └── main.tsx              # React DOM root entrypoint
-│   ├── package.json              # Frontend dependencies and scripts
-│   ├── tsconfig.json             # TypeScript compiler settings
-│   └── vite.config.ts            # Vite bundler configuration with Tailwind plugin
-├── tests/
-│   ├── test_agent.py             # Agent tool registry, health tools, clean output tests
-│   ├── test_calculator.py        # Safe math evaluator, AST injection defense, conversions
-│   ├── test_chats.py             # SQLite chat session creation, rename, delete, message retrieval
-│   ├── test_documents.py         # Document list, stats, upload, and deletion lifecycle tests
-│   ├── test_health.py            # API root and health check endpoints
-│   ├── test_memory.py            # Sliding window context truncation tests
-│   └── test_rag_tool.py          # Vector retrieval execution and citation metadata tests
-├── vectorstore/                  # Vector database files (`index.faiss`, `index.pkl`, `manifest.json`, `brain_memory.db`)
-├── .env.example                  # Template configuration file
-├── main.py                       # FastAPI application entrypoint and router registration
-├── notes.txt                     # Default seeded knowledge base text document
-└── requirements.txt              # Python server package dependencies
+nuravault/
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ agents/
+â”‚   â”‚   â”œâ”€â”€ __init__.py           # Agent module exports
+â”‚   â”‚   â”œâ”€â”€ neural_agent.py       # NeuralAgent class, tool binding, and stream event generator
+â”‚   â”‚   â””â”€â”€ prompts.py            # SYSTEM_AGENT_PROMPT and routing instructions
+â”‚   â”œâ”€â”€ api/
+â”‚   â”‚   â”œâ”€â”€ __init__.py           # API package initialization
+â”‚   â”‚   â”œâ”€â”€ chat.py               # POST /chat and POST /chat/stream endpoints
+â”‚   â”‚   â”œâ”€â”€ chats.py              # CRUD endpoints for /chats and /chats/{id}/messages
+â”‚   â”‚   â”œâ”€â”€ documents.py          # GET /documents, GET /stats, and DELETE /documents/{filename}
+â”‚   â”‚   â”œâ”€â”€ health.py             # GET /health and GET / endpoints
+â”‚   â”‚   â””â”€â”€ upload.py             # POST /upload multipart document file endpoint
+â”‚   â”œâ”€â”€ config/
+â”‚   â”‚   â”œâ”€â”€ __init__.py           # Config package initialization
+â”‚   â”‚   â””â”€â”€ settings.py           # Environment variables, directory paths, and default hyperparameters
+â”‚   â”œâ”€â”€ database/
+â”‚   â”‚   â”œâ”€â”€ __init__.py           # Database package initialization
+â”‚   â”‚   â”œâ”€â”€ sqlite_db.py          # DatabaseManager class for SQLite initialization & migrations
+â”‚   â”‚   â””â”€â”€ vector_store.py       # VectorStoreManager class for FAISS load/save/clear/search
+â”‚   â”œâ”€â”€ models/
+â”‚   â”‚   â”œâ”€â”€ __init__.py           # Models package initialization
+â”‚   â”‚   â””â”€â”€ schemas.py            # Pydantic v2 schemas (Message, Chat, DocumentInfo, Source, Stats)
+â”‚   â”œâ”€â”€ rag/
+â”‚   â”‚   â”œâ”€â”€ __init__.py           # RAG package initialization
+â”‚   â”‚   â”œâ”€â”€ embeddings.py         # HuggingFaceEmbeddings singleton factory
+â”‚   â”‚   â”œâ”€â”€ loaders.py            # DocumentLoaderFactory for PDF, DOCX, TXT, MD
+â”‚   â”‚   â””â”€â”€ splitter.py           # DocumentSplitter using RecursiveCharacterTextSplitter
+â”‚   â”œâ”€â”€ services/
+â”‚   â”‚   â”œâ”€â”€ __init__.py           # Services package initialization
+â”‚   â”‚   â”œâ”€â”€ conversation_service.py # SQLite CRUD operations for chats and messages
+â”‚   â”‚   â”œâ”€â”€ document_manager.py   # DocumentManager lifecycle (manifest tracking, indexing, purging)
+â”‚   â”‚   â””â”€â”€ memory_service.py     # Sliding window conversation memory provider
+â”‚   â””â”€â”€ tools/
+â”‚       â”œâ”€â”€ __init__.py           # Tool exports
+â”‚       â”œâ”€â”€ base.py               # ToolRegistry, ToolExecutionContext, ToolExecutionRecord, metadata
+â”‚       â”œâ”€â”€ calculator_tool.py    # Safe AST calculator tool and mathematical evaluator
+â”‚       â””â”€â”€ rag_tool.py           # RAGSearchTool wrapping FAISS vector retriever
+â”œâ”€â”€ data/                         # Uploaded documents directory (.txt, .pdf, .docx, .md)
+â”œâ”€â”€ docs/                         # Master technical documentation
+â”œâ”€â”€ frontend/
+â”‚   â”œâ”€â”€ public/                   # Static browser assets
+â”‚   â”œâ”€â”€ src/
+â”‚   â”‚   â”œâ”€â”€ components/
+â”‚   â”‚   â”‚   â”œâ”€â”€ Chat/
+â”‚   â”‚   â”‚   â”‚   â””â”€â”€ ChatArea.tsx  # Message stream container, welcome screen, tool status banner
+â”‚   â”‚   â”‚   â”œâ”€â”€ Header/
+â”‚   â”‚   â”‚   â”‚   â””â”€â”€ Navbar.tsx    # Header, view switchers, health indicator, backend settings
+â”‚   â”‚   â”‚   â”œâ”€â”€ Input/
+â”‚   â”‚   â”‚   â”‚   â””â”€â”€ MessageInput.tsx # Auto-resizing textarea with keyboard submission
+â”‚   â”‚   â”‚   â”œâ”€â”€ KnowledgeBase/
+â”‚   â”‚   â”‚   â”‚   â””â”€â”€ KnowledgeBase.tsx # Vector stats cards, document table, upload & delete UI
+â”‚   â”‚   â”‚   â”œâ”€â”€ Message/
+â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ CodeBlock.tsx # ChatGPT-style code blocks with header & copy button
+â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ MarkdownRenderer.tsx # ReactMarkdown with remark-gfm parser
+â”‚   â”‚   â”‚   â”‚   â””â”€â”€ MessageItem.tsx # Chat bubble with tools badges, citations, copy action
+â”‚   â”‚   â”‚   â””â”€â”€ Sidebar/
+â”‚   â”‚   â”‚       â””â”€â”€ Sidebar.tsx   # Chat sessions sidebar, rename/delete/create controls
+â”‚   â”‚   â”œâ”€â”€ hooks/
+â”‚   â”‚   â”‚   â””â”€â”€ useChat.ts        # Primary conversation lifecycle & SSE streaming hook
+â”‚   â”‚   â”œâ”€â”€ services/
+â”‚   â”‚   â”‚   â””â”€â”€ api.ts            # Client HTTP & SSE streaming service
+â”‚   â”‚   â”œâ”€â”€ types/
+â”‚   â”‚   â”‚   â””â”€â”€ chat.ts           # TypeScript interfaces (Message, RAGSource, Conversation)
+â”‚   â”‚   â”œâ”€â”€ utils/
+â”‚   â”‚   â”‚   â””â”€â”€ storage.ts        # LocalStorage helpers for backend configuration
+â”‚   â”‚   â”œâ”€â”€ App.tsx               # Root view router, modal manager, connection heartbeat
+â”‚   â”‚   â”œâ”€â”€ index.css             # Tailwind CSS tokens, scrollbar styling, animations
+â”‚   â”‚   â””â”€â”€ main.tsx              # React DOM root entrypoint
+â”‚   â”œâ”€â”€ package.json              # Frontend dependencies and scripts
+â”‚   â”œâ”€â”€ tsconfig.json             # TypeScript compiler settings
+â”‚   â””â”€â”€ vite.config.ts            # Vite bundler configuration with Tailwind plugin
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ test_agent.py             # Agent tool registry, health tools, clean output tests
+â”‚   â”œâ”€â”€ test_calculator.py        # Safe math evaluator, AST injection defense, conversions
+â”‚   â”œâ”€â”€ test_chats.py             # SQLite chat session creation, rename, delete, message retrieval
+â”‚   â”œâ”€â”€ test_documents.py         # Document list, stats, upload, and deletion lifecycle tests
+â”‚   â”œâ”€â”€ test_health.py            # API root and health check endpoints
+â”‚   â”œâ”€â”€ test_memory.py            # Sliding window context truncation tests
+â”‚   â””â”€â”€ test_rag_tool.py          # Vector retrieval execution and citation metadata tests
+â”œâ”€â”€ vectorstore/                  # Vector database files (`index.faiss`, `index.pkl`, `manifest.json`, `brain_memory.db`)
+â”œâ”€â”€ .env.example                  # Template configuration file
+â”œâ”€â”€ main.py                       # FastAPI application entrypoint and router registration
+â”œâ”€â”€ notes.txt                     # Default seeded knowledge base text document
+â””â”€â”€ requirements.txt              # Python server package dependencies
 ```
 
 ---
@@ -295,28 +295,28 @@ The frontend is constructed with React 19 and TypeScript, following a clean unid
 
 ```
 [App.tsx]
-   │
-   ├── [Navbar.tsx] (Health Status, View Switcher: 'chat' | 'knowledge', Settings Modal)
-   ├── [Sidebar.tsx] (Chat Session Selection, Create Chat, Rename Chat, Delete Chat)
-   │
-   └── View Switcher
-          │
-          ├── (View === 'chat') ──► [ChatArea.tsx]
-          │                               │
-          │                               ├── [MessageItem.tsx] (x N)
-          │                               │         ├── [MarkdownRenderer.tsx]
-          │                               │         │         └── [CodeBlock.tsx]
-          │                               │         ├── Tool Badges ('Used: Calculator', 'Used: Knowledge Base')
-          │                               │         ├── Sources Citations Cards (Title, Snippet, URL)
-          │                               │         └── Action Bar (Copy message)
-          │                               │
-          │                               ├── [Thinking Status Banner] (Live SSE status message)
-          │                               └── [MessageInput.tsx] (Textarea input & submit)
-          │
-          └── (View === 'knowledge') ──► [KnowledgeBase.tsx]
-                                                ├── System Metric Cards (Doc Count, Vectors, Model, Store)
-                                                ├── Upload Document Button & Dropzone
-                                                └── Document Table (Filename, Chunks, Size, Date, Delete Action)
+   â”‚
+   â”œâ”€â”€ [Navbar.tsx] (Health Status, View Switcher: 'chat' | 'knowledge', Settings Modal)
+   â”œâ”€â”€ [Sidebar.tsx] (Chat Session Selection, Create Chat, Rename Chat, Delete Chat)
+   â”‚
+   â””â”€â”€ View Switcher
+          â”‚
+          â”œâ”€â”€ (View === 'chat') â”€â”€â–º [ChatArea.tsx]
+          â”‚                               â”‚
+          â”‚                               â”œâ”€â”€ [MessageItem.tsx] (x N)
+          â”‚                               â”‚         â”œâ”€â”€ [MarkdownRenderer.tsx]
+          â”‚                               â”‚         â”‚         â””â”€â”€ [CodeBlock.tsx]
+          â”‚                               â”‚         â”œâ”€â”€ Tool Badges ('Used: Calculator', 'Used: Knowledge Base')
+          â”‚                               â”‚         â”œâ”€â”€ Sources Citations Cards (Title, Snippet, URL)
+          â”‚                               â”‚         â””â”€â”€ Action Bar (Copy message)
+          â”‚                               â”‚
+          â”‚                               â”œâ”€â”€ [Thinking Status Banner] (Live SSE status message)
+          â”‚                               â””â”€â”€ [MessageInput.tsx] (Textarea input & submit)
+          â”‚
+          â””â”€â”€ (View === 'knowledge') â”€â”€â–º [KnowledgeBase.tsx]
+                                                â”œâ”€â”€ System Metric Cards (Doc Count, Vectors, Model, Store)
+                                                â”œâ”€â”€ Upload Document Button & Dropzone
+                                                â””â”€â”€ Document Table (Filename, Chunks, Size, Date, Delete Action)
 ```
 
 ### Component Breakdown
@@ -337,29 +337,29 @@ FastAPI serves as the asynchronous backend framework.
 
 ```
 HTTP Client Request (e.g. POST /chat/stream)
-    │
-    ▼
-[CORS Middleware] ── (Validates Origin against settings.CORS_ORIGINS)
-    │
-    ▼
-[FastAPI Router Routing] ── (Routes to backend/api/chat.py)
-    │
-    ▼
-[Pydantic Request Validation] ── (Validates ChatRequest schema: message, chat_id)
-    │
-    ▼
-[Conversation Retrieval & Context Injection] ── (MemoryService gets last k=10 messages)
-    │
-    ▼
-[NeuralAgent Execution] ── (Prepares SystemMessage, binds tools, queries OpenRouter)
-    │
-    ├── (If tool call emitted: executes tool in ToolRegistry, appends ToolMessage)
-    │
-    ▼
-[SSE Generator Stream] ── (Yields 'status', 'token', 'done' events over HTTP)
-    │
-    ▼
-[SQLite Message Persistence] ── (ConversationService records final assistant message)
+    â”‚
+    â–¼
+[CORS Middleware] â”€â”€ (Validates Origin against settings.CORS_ORIGINS)
+    â”‚
+    â–¼
+[FastAPI Router Routing] â”€â”€ (Routes to backend/api/chat.py)
+    â”‚
+    â–¼
+[Pydantic Request Validation] â”€â”€ (Validates ChatRequest schema: message, chat_id)
+    â”‚
+    â–¼
+[Conversation Retrieval & Context Injection] â”€â”€ (MemoryService gets last k=10 messages)
+    â”‚
+    â–¼
+[NeuralAgent Execution] â”€â”€ (Prepares SystemMessage, binds tools, queries OpenRouter)
+    â”‚
+    â”œâ”€â”€ (If tool call emitted: executes tool in ToolRegistry, appends ToolMessage)
+    â”‚
+    â–¼
+[SSE Generator Stream] â”€â”€ (Yields 'status', 'token', 'done' events over HTTP)
+    â”‚
+    â–¼
+[SQLite Message Persistence] â”€â”€ (ConversationService records final assistant message)
 ```
 
 ### Key Modules:
@@ -371,7 +371,7 @@ HTTP Client Request (e.g. POST /chat/stream)
 
 ## 8. LLM Architecture & OpenRouter Integration
 
-Neural Core leverages **OpenRouter** as its LLM inference provider through LangChain's `ChatOpenAI` client interface.
+NuraVault leverages **OpenRouter** as its LLM inference provider through LangChain's `ChatOpenAI` client interface.
 
 ### Client Configuration
 ```python
@@ -402,7 +402,7 @@ LangChain message abstractions represent conversation turns:
 The system prompt in `backend/agents/prompts.py` governs agent decision-making:
 
 ```text
-You are Neural Core, an advanced, articulate AI Agent powered by intelligent tool calling, conversational memory, and multi-source reasoning.
+You are NuraVault, an advanced, articulate AI Agent powered by intelligent tool calling, conversational memory, and multi-source reasoning.
 
 Available Tools:
 1. `knowledge_base_search(query)`: Search user-uploaded documents, files, resumes, and stored knowledge in the vector store. Always use this tool whenever the user asks questions about their uploaded files, documents, organization policies (e.g. leave, remote work), resumes, or stored internal data.
@@ -414,9 +414,9 @@ Core Decision Rules:
 - Calculations: For any calculation or math query, call `calculator_tool`.
 
 Real-Time Information & Internet Queries:
-- No Real-Time Internet Access: Neural Core does NOT currently have live web search or real-time internet access.
+- No Real-Time Internet Access: NuraVault does NOT currently have live web search or real-time internet access.
 - When the user asks for real-time external data (e.g. today's weather, live stock prices, latest news), NEVER hallucinate or make up current facts.
-- Instead, respond in a friendly, transparent, and slightly playful manner (e.g. "I don't have real-time internet access just yet 😄 — my live-web-search brain is still under construction. But I can help you with AI concepts, your Knowledge Base, uploaded documents, calculations, and everything in our conversation history!").
+- Instead, respond in a friendly, transparent, and slightly playful manner (e.g. "I don't have real-time internet access just yet ðŸ˜„ â€” my live-web-search brain is still under construction. But I can help you with AI concepts, your Knowledge Base, uploaded documents, calculations, and everything in our conversation history!").
 - Do NOT block conceptual questions that happen to use words like "modern" or "current".
 
 Output & Formatting Rules:
@@ -436,28 +436,28 @@ Output & Formatting Rules:
 
 ```
 [Raw Document (.pdf, .txt, .docx, .md)]
-                │
-                ▼
+                â”‚
+                â–¼
       [DocumentLoaderFactory]  (Loads raw text)
-                │
-                ▼
+                â”‚
+                â–¼
        [DocumentSplitter]      (Splits text into chunks of 300 chars, 50 overlap)
-                │
-                ▼
+                â”‚
+                â–¼
     [HuggingFaceEmbeddings]    (Transforms text chunks into 384-dim dense vectors)
-                │
-                ▼
+                â”‚
+                â–¼
       [FAISS Vector Store]     (Stores vectors and serialized document chunks)
-                │
+                â”‚
          (User Query)
-                │
-                ▼
+                â”‚
+                â–¼
       [Similarity Search]      (Computes L2 distance; retrieves Top-K=3 chunks)
-                │
-                ▼
+                â”‚
+                â–¼
     [RAG Context Injection]    (Passes retrieved snippets into LLM Prompt)
-                │
-                ▼
+                â”‚
+                â–¼
        [Grounded Answer]       (Generated answer with cited reference sources)
 ```
 
@@ -530,19 +530,19 @@ When the `knowledge_base_search` tool executes:
 The agent layer in `backend/agents/neural_agent.py` coordinates autonomous tool invocation:
 
 ```
-[User Input] ──► [NeuralAgent + ChatOpenAI]
-                         │
-        ┌────────────────┴────────────────┐
-        ▼                                 ▼
+[User Input] â”€â”€â–º [NeuralAgent + ChatOpenAI]
+                         â”‚
+        â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+        â–¼                                 â–¼
 [tool_calls emitted]              [No tool calls]
-        │                                 │
-        ▼                                 ▼
+        â”‚                                 â”‚
+        â–¼                                 â–¼
 [Execute Registered Tool]         [Direct Answer Stream]
-        │
-        ▼
+        â”‚
+        â–¼
 [Append ToolMessage]
-        │
-        ▼
+        â”‚
+        â–¼
 [Final Model Synthesis Stream]
 ```
 
@@ -591,10 +591,10 @@ Relational data is stored in SQLite at `vectorstore/brain_memory.db` via `Databa
 | created_at (TEXT, ISO-8601)        |
 | updated_at (TEXT, ISO-8601)        |
 +------------------------------------+
-                  │ 1
-                  │
-                  │ N (ON DELETE CASCADE)
-                  ▼
+                  â”‚ 1
+                  â”‚
+                  â”‚ N (ON DELETE CASCADE)
+                  â–¼
 +------------------------------------+
 |              messages              |
 +------------------------------------+
@@ -727,7 +727,7 @@ Relational data is stored in SQLite at `vectorstore/brain_memory.db` via `Databa
 ## 28. AI Response Action & Quality Control System
 
 - **Copy Response Action:** Integrated at the bottom-right of every assistant message in `MessageItem.tsx`.
-- **Behavior:** Copies plain text response content to the system clipboard and toggles a green `Copied ✓` indicator for 2 seconds.
+- **Behavior:** Copies plain text response content to the system clipboard and toggles a green `Copied âœ“` indicator for 2 seconds.
 
 ---
 
@@ -737,7 +737,7 @@ Relational data is stored in SQLite at `vectorstore/brain_memory.db` via `Databa
 - **Code Block Component (`CodeBlock.tsx`):**
   - Detects fenced language blocks (e.g. ````python`).
   - Top header bar displays lowercase language badge on left and a `Copy` button on right.
-  - Clicking `Copy` extracts raw code text only (omitting backticks) and changes to `Copied ✓` for 2 seconds.
+  - Clicking `Copy` extracts raw code text only (omitting backticks) and changes to `Copied âœ“` for 2 seconds.
   - Enclosed in a dark theme container (`bg-[#060913]`) with horizontal scrolling for long lines.
 
 ---
@@ -775,7 +775,7 @@ The frontend `ApiService.streamChatMessage` parses lines starting with `data: `,
 ## 32. Security, CORS & Environment Configuration
 
 - **API Keys:** Loaded strictly from `.env` via `backend/config/settings.py`. Never sent to the client browser.
-- **Dynamic CORS:** Configured via `CORS_ORIGINS` in `.env` (supports comma-separated origins for production domains like `https://neural-core.vercel.app`).
+- **Dynamic CORS:** Configured via `CORS_ORIGINS` in `.env` (supports comma-separated origins for production domains like `https://nuravault.vercel.app`).
 - **AST Execution Sandbox:** Disallows arbitrary Python execution in the calculator tool.
 
 ---
@@ -804,9 +804,9 @@ python -m unittest discover -s tests -v
 ```
 [Vercel Edge Network]                          [Cloud FastAPI Service]
 (React Single-Page App)                      (Render / Railway / Fly.io / AWS)
-          │                                                  │
-          │  HTTPS / REST / SSE                              │
-          └──────────────────────────────────────────────────┘
+          â”‚                                                  â”‚
+          â”‚  HTTPS / REST / SSE                              â”‚
+          â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
                       VITE_API_URL=https://api.yourdomain.com
 ```
 
@@ -900,34 +900,34 @@ npm run dev
 ## 41. Technical Interview Preparation Guide
 
 ### Beginner Level
-- **Q: What is Neural Core?**  
-  *Strong Answer:* Neural Core is a full-stack AI platform combining an autonomous tool-calling agent with a multi-document RAG pipeline, SQLite conversational memory, and real-time SSE streaming.
+- **Q: What is NuraVault?**  
+  *Strong Answer:* NuraVault is a full-stack AI platform combining an autonomous tool-calling agent with a multi-document RAG pipeline, SQLite conversational memory, and real-time SSE streaming.
 - **Q: What is RAG?**  
   *Strong Answer:* Retrieval-Augmented Generation enhances LLM responses by retrieving relevant document snippets from a vector store and injecting them into the prompt as factual ground truth.
 
 ### Intermediate Level
 - **Q: Why use FAISS instead of traditional SQL full-text search?**  
   *Strong Answer:* SQL search matches keywords, failing on synonyms. FAISS performs dense vector similarity search in semantic embedding space, finding conceptually relevant content even when exact keywords differ.
-- **Q: How does Server-Sent Events (SSE) streaming work in Neural Core?**  
+- **Q: How does Server-Sent Events (SSE) streaming work in NuraVault?**  
   *Strong Answer:* FastAPI uses an ASGI async generator streaming chunked event data (`data: {...}\n\n`). The client reads the stream via `ReadableStreamDefaultReader`, rendering text tokens incrementally.
 
 ### Advanced Level
-- **Q: How does Neural Core prevent code injection in the calculator?**  
+- **Q: How does NuraVault prevent code injection in the calculator?**  
   *Strong Answer:* It uses Python's Abstract Syntax Tree (`ast.parse`) to recursively evaluate only whitelisted mathematical operations (`BinOp`, `UnaryOp`, `Constant`), completely bypassing unsafe `eval()`.
 - **Q: How is document deletion handled in the vector store?**  
-  *Strong Answer:* FAISS does not support arbitrary row deletions cleanly. Neural Core purges the source file from disk and manifest, then re-synchronizes a clean FAISS index from the remaining documents.
+  *Strong Answer:* FAISS does not support arbitrary row deletions cleanly. NuraVault purges the source file from disk and manifest, then re-synchronizes a clean FAISS index from the remaining documents.
 
 ---
 
 ## 42. Project Elevator Pitch (30 Seconds)
 
-> "Neural Core is a production-oriented AI Agent and Knowledge Engine built with React, FastAPI, and LangChain. It combines multi-document RAG using local dense embeddings and FAISS, a secure AST-based mathematical tool, and multi-chat SQLite memory. Responses stream in real time via Server-Sent Events with live tool status visibility and formatted code blocks."
+> "NuraVault is a production-oriented AI Agent and Knowledge Engine built with React, FastAPI, and LangChain. It combines multi-document RAG using local dense embeddings and FAISS, a secure AST-based mathematical tool, and multi-chat SQLite memory. Responses stream in real time via Server-Sent Events with live tool status visibility and formatted code blocks."
 
 ---
 
 ## 43. Standard Project Walkthrough (2 Minutes)
 
-> "Neural Core was designed to bridge the gap between basic LLM wrappers and robust, production-ready AI applications.
+> "NuraVault was designed to bridge the gap between basic LLM wrappers and robust, production-ready AI applications.
 >
 > On the frontend, we built a modern React 19 single-page application with TypeScript and Tailwind CSS that supports multiple chat sessions, real-time SSE streaming, live tool usage badges, and ChatGPT-style code blocks with copy functionality.
 >
@@ -939,7 +939,7 @@ npm run dev
 
 ## 44. Deep Architectural Walkthrough (5 Minutes)
 
-> "Let's walk through the end-to-end architecture of Neural Core.
+> "Let's walk through the end-to-end architecture of NuraVault.
 >
 > 1. **Client Layer:** The React 19 frontend uses a custom `useChat` hook to manage optimistic UI updates and listen to Server-Sent Events from FastAPI.
 > 2. **API & Middleware Layer:** FastAPI validates incoming requests using Pydantic v2 schemas and applies dynamic CORS policies configured via environment variables.
@@ -957,7 +957,7 @@ npm run dev
 - **RAG (Retrieval-Augmented Generation):** Architecture combining information retrieval with LLM generation to answer queries grounded in private data.
 - **Embedding:** Dense numerical vector representation capturing the semantic meaning of text.
 - **FAISS (Facebook AI Similarity Search):** C++ library optimized for efficient dense vector similarity search.
-- **AST (Abstract Syntax Tree):** Tree representation of source code structure used by Neural Core to safely evaluate mathematical operations.
+- **AST (Abstract Syntax Tree):** Tree representation of source code structure used by NuraVault to safely evaluate mathematical operations.
 - **SSE (Server-Sent Events):** Unidirectional HTTP streaming protocol enabling servers to push real-time events to browsers.
 
 ---
@@ -973,39 +973,39 @@ npm run dev
 |  |  (Live Tool Badges) |   |  (Upload & Deletion)  |   |  (Syntax & Copy Action)   |  |
 |  +---------------------+   +-----------------------+   +---------------------------+  |
 +---------------------------------------------------------------------------------------+
-                                        │               ▲
-          HTTP POST /chat/stream        │               │ SSE Event Stream
-          HTTP POST /upload             │               │ (Status, Tokens, Citations)
-          HTTP DELETE /documents        ▼               │
+                                        â”‚               â–²
+          HTTP POST /chat/stream        â”‚               â”‚ SSE Event Stream
+          HTTP POST /upload             â”‚               â”‚ (Status, Tokens, Citations)
+          HTTP DELETE /documents        â–¼               â”‚
 +---------------------------------------------------------------------------------------+
 |                                  FASTAPI SERVER                                       |
 |                                                                                       |
 |  +---------------------------------------------------------------------------------+  |
 |  |                      CORS Middleware & Pydantic Validation                      |  |
 |  +---------------------------------------------------------------------------------+  |
-|                                           │                                           |
-|       ┌───────────────────────────────────┼───────────────────────────────────┐       |
-|       ▼                                   ▼                                   ▼       |
-| +───────────────────+           +───────────────────+           +───────────────────+ |
+|                                           â”‚                                           |
+|       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       |
+|       â–¼                                   â–¼                                   â–¼       |
+| +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+ |
 | |  Conversation API |           |  Chat Stream API  |           |   Documents API   | |
-| +───────────────────+           +───────────────────+           +───────────────────+ |
-|       │                                   │                                   │       |
-|       ▼                                   ▼                                   ▼       |
-| +───────────────────+           +───────────────────+           +───────────────────+ |
+| +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+ |
+|       â”‚                                   â”‚                                   â”‚       |
+|       â–¼                                   â–¼                                   â–¼       |
+| +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+ |
 | | ConversationSvc   |           |    Neural Agent   |           |  DocumentManager  | |
 | | (SQLite DB CRUD)  |           |  (Tool Router)    |           | (Manifest & Sync) | |
-| +───────────────────+           +───────────────────+           +───────────────────+ |
-|       │                                   │                                   │       |
-|       ▼                            ┌──────┴──────┐                            ▼       |
-| +───────────────────+              ▼             ▼                      +-----------+ |
+| +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+           +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+ |
+|       â”‚                                   â”‚                                   â”‚       |
+|       â–¼                            â”Œâ”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”                            â–¼       |
+| +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+              â–¼             â–¼                      +-----------+ |
 | |  SQLite Database  |     +--------------+ +---------------+            | Raw Files | |
 | | (brain_memory.db) |     |  Calculator  | |   RAG Tool    |            |  (data/)  | |
-| +───────────────────+     |  (Safe AST)  | | (Retriever)   |            +-----------+ |
-|                           +--------------+ +---------------+                  │       |
-|                                                    │                          │       |
-|                                                    ▼                          ▼       |
+| +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+     |  (Safe AST)  | | (Retriever)   |            +-----------+ |
+|                           +--------------+ +---------------+                  â”‚       |
+|                                                    â”‚                          â”‚       |
+|                                                    â–¼                          â–¼       |
 |                                            +---------------+            +-----------+ |
-|                                            | FAISS Vector  |◄───────────| Embeddings| |
+|                                            | FAISS Vector  |â—„â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€| Embeddings| |
 |                                            | (index.faiss) |            | (MiniLM)  | |
 |                                            +---------------+            +-----------+ |
 +---------------------------------------------------------------------------------------+
@@ -1015,7 +1015,7 @@ npm run dev
 
 ## 47. How Everything Connects: The Complete Story
 
-From the moment a user opens **Neural Core**, every component functions as part of a unified, production-ready system:
+From the moment a user opens **NuraVault**, every component functions as part of a unified, production-ready system:
 
 1. **Initialization:** The React frontend checks backend connectivity via `GET /health`. The FastAPI backend initializes SQLite tables in `vectorstore/brain_memory.db` and loads the FAISS index from disk.
 2. **Conversation Selection:** The user selects or creates a conversation session. `ConversationService` loads previous messages from SQLite into the chat window.
@@ -1025,3 +1025,4 @@ From the moment a user opens **Neural Core**, every component functions as part 
 6. **Real-time Feedback:** As tools execute, the backend pushes SSE `status` messages (`"Searching knowledge base..."`, `"Calculating..."`), displaying animated thinking badges in the UI.
 7. **Streaming Generation:** The LLM streams answer tokens over the SSE connection. The React frontend renders markdown formatting and syntax-highlighted code blocks in real time.
 8. **Persistence:** Once streaming finishes, the backend commits the complete interaction, reference citations, and tool usage metadata to SQLite, preserving state across server restarts.
+

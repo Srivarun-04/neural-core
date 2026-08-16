@@ -28,7 +28,7 @@ def clean_agent_output(text: str) -> str:
 
 class NeuralAgent:
     """
-    Intelligent Tool-Calling Agent for Neural Core.
+    Intelligent Tool-Calling Agent for NuraVault.
     Coordinates memory, tool selection (RAG, Calculator),
     and response generation with full streaming and source citation tracking.
     """

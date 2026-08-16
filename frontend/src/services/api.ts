@@ -1,4 +1,5 @@
 import type { RAGSource, Conversation } from '../types/chat';
+import { StorageUtil } from '../utils/storage';
 
 export interface ChatRequest {
   message: string;
@@ -16,7 +17,7 @@ const DEFAULT_BACKEND_URL = 'http://localhost:8000';
 
 export class ApiService {
   private static getBackendUrl(): string {
-    const url = (import.meta.env.VITE_API_URL as string) || localStorage.getItem('backend_url') || DEFAULT_BACKEND_URL;
+    const url = StorageUtil.getBackendUrl() || (import.meta.env.VITE_API_URL as string) || DEFAULT_BACKEND_URL;
     return url.replace(/\/+$/, '');
   }
 

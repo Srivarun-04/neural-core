@@ -378,7 +378,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
                     </span>
                   </div>
                   <p className="text-xs text-[var(--text-secondary)] mt-1 max-w-2xl leading-relaxed">
-                    NuraVault RAG System The official project specifications, RAG architecture, embedding model info, vector store mechanics, calculator tool instructions, and conversational memory rules.
+                    The official project specifications, RAG architecture, embedding model info, vector store mechanics, calculator tool instructions, and conversational memory rules.
                   </p>
                 </div>
               </div>

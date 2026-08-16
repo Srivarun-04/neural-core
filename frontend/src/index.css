@@ -17,14 +17,14 @@
   }
 
   html.light {
-    --bg-app: #F4F7FB;
-    --bg-surface: #FFFFFF;
+    --bg-app: #F1F5F9;
+    --bg-surface: #F8FAFC;
     --bg-card: #FFFFFF;
-    --bg-elevated: #F1F5F9;
+    --bg-elevated: #E2E8F0;
     --border-subtle: rgba(15, 23, 42, 0.08);
     --border-card: rgba(2, 132, 199, 0.15);
-    --text-primary: #0B1329;
-    --text-secondary: #475569;
+    --text-primary: #0F172A;
+    --text-secondary: #334155;
     --text-muted: #64748B;
     --accent-cyan: #0284C7;
     --accent-blue: #2563EB;

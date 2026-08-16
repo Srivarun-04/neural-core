@@ -1,32 +1,60 @@
-# React + TypeScript + Vite
+# NuraVault Frontend 🎨⚡
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> **React 19 + TypeScript Single-Page Application for NuraVault**
 
-Currently, two official plugins are available:
+NuraVault's frontend is a responsive, type-safe workspace interface designed for AI conversations, multi-document retrieval (RAG), tool execution badges, and knowledge management.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19 & Vite 8**: Fast HMR development and optimized production bundling.
+- **Real-Time Token Streaming**: Server-Sent Events (SSE) streaming with live tool-calling state transitions (`"Searching knowledge base..."`, `"Calculating..."`, `"Generating response..."`).
+- **Knowledge Vault Dashboard**: Upload documents (PDF, TXT, DOCX, Markdown), view indexed chunk stats, and manage file lifecycles with instant re-indexing.
+- **Persistent Multi-Chat Workspace**: SQLite-backed session management with create, select, inline rename, and delete capabilities.
+- **Aesthetic Dual-Theme Engine**: Dark mode and off-white light mode with zero-flash persistence.
+- **Rich Message Presentation**: Markdown formatting, syntax-highlighted code blocks with copy-to-clipboard, source citations with direct snippet previews, and 👍 / 👎 response feedback.
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 🛠️ Development & Build
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### Prerequisites
+- Node.js 18+
+- npm (or yarn / pnpm)
+
+### Install Dependencies
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### Run Locally
+```bash
+npm run dev
+```
+The app will start at `http://localhost:5173`.
+
+### Build for Production
+```bash
+npm run build
+```
+
+---
+
+## 📁 Structure
+
+```
+frontend/src/
+├── components/
+│   ├── Chat/          # ChatArea and welcome screen
+│   ├── Header/        # Navbar, status indicator & theme toggle
+│   ├── Input/         # MessageInput textarea with auto-resize
+│   ├── KnowledgeBase/ # Document vault dashboard & drag-and-drop uploader
+│   ├── Message/       # MessageItem, MarkdownRenderer & CodeBlock
+│   ├── Sidebar/       # Multi-conversation drawer & search
+│   └── common/        # NuraVaultLogo SVG brand icon
+├── hooks/             # useChat state & streaming lifecycle hook
+├── services/          # api.ts (REST endpoints & SSE stream parser)
+├── types/             # TypeScript data contracts & schemas
+└── utils/             # storage.ts (localStorage helpers)
+```

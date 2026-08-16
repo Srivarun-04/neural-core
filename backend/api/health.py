@@ -16,7 +16,7 @@ def get_health_router(doc_manager: DocumentManager, agent: Optional[NeuralAgent]
         
         return {
             "status": "healthy",
-            "version": "0.4",
+            "version": "1.0.0",
             "vector_store": vector_status,
             "tools": tools_available
         }

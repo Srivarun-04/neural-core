@@ -52,10 +52,10 @@ export function Navbar({
               />
               <span className="hidden sm:inline">
                 {status === 'connected'
-                  ? 'Connected to NuraVault Core'
+                  ? 'Connected to NuraVault API'
                   : status === 'connecting'
-                  ? 'Reconnecting...'
-                  : 'Core Offline'}
+                  ? 'Connecting to API...'
+                  : 'NuraVault API Offline'}
               </span>
               <span className="sm:hidden">
                 {status === 'connected' ? 'Online' : 'Offline'}

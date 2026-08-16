@@ -25,7 +25,7 @@ class TestDocumentsEndpoints(unittest.TestCase):
     def test_document_lifecycle_upload_and_delete(self):
         # 1. Upload a test document
         test_filename = "test_lifecycle_doc.txt"
-        file_content = b"Neural Core document lifecycle test: Deletion removes all chunks completely."
+        file_content = b"NuraVault document lifecycle test: Deletion removes all chunks completely."
         file_obj = io.BytesIO(file_content)
 
         upload_res = self.client.post(

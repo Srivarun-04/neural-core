@@ -85,7 +85,7 @@ class ToolExecutionContext:
 
 class ToolRegistry:
     """
-    Central registry for Neural Core tools. Enables dynamic registration,
+    Central registry for NuraVault tools. Enables dynamic registration,
     inspection, and conversion to LangChain tools.
     """
     def __init__(self):

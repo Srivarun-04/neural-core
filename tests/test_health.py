@@ -11,7 +11,7 @@ class TestHealthEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["status"], "healthy")
-        self.assertIn("Neural Core", data["message"])
+        self.assertIn("NuraVault", data["message"])
 
     def test_health_endpoint(self):
         response = self.client.get("/health")

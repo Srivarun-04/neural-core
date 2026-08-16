@@ -149,7 +149,21 @@ class DocumentManager:
         # Step 2: Ensure canonical system knowledge is embedded
         self._ensure_system_knowledge()
 
-        # Step 3: Scan data/ folder and identify user files needing indexing
+        # Step 3: Check for deleted files that are still in manifest
+        missing_files = []
+        if "documents" in self.manifest:
+            for fname in list(self.manifest["documents"].keys()):
+                fpath = os.path.join(DATA_DIR, fname)
+                if not os.path.exists(fpath):
+                    missing_files.append(fname)
+                    del self.manifest["documents"][fname]
+
+        if missing_files:
+            print(f"[DOCUMENT MANAGER] Pruned {len(missing_files)} missing document(s) from manifest: {missing_files}")
+            self.rebuild_full_index()
+            return
+
+        # Step 4: Scan data/ folder and identify user files needing indexing
         unindexed_files = []
         if os.path.exists(DATA_DIR):
             for fname in os.listdir(DATA_DIR):
@@ -233,11 +247,17 @@ class DocumentManager:
                     "source_type": "system"
                 }
 
-        # 2. Add user document chunks
+        # 2. Add user document chunks and prune missing records from manifest
+        existing_doc_keys = list(self.manifest.get("documents", {}).keys())
+        for doc_key in existing_doc_keys:
+            doc_path = os.path.join(DATA_DIR, doc_key)
+            if not os.path.exists(doc_path):
+                del self.manifest["documents"][doc_key]
+
         if os.path.exists(DATA_DIR):
             for fname in os.listdir(DATA_DIR):
                 fpath = os.path.join(DATA_DIR, fname)
-                if os.path.isfile(fpath) and DocumentLoaderFactory.is_supported(fpath) and fname in self.manifest.get("documents", {}):
+                if os.path.isfile(fpath) and DocumentLoaderFactory.is_supported(fpath):
                     raw_docs = DocumentLoaderFactory.load_document(fpath)
                     file_chunks = self.splitter.split_and_enrich(raw_docs, fname)
                     for chunk in file_chunks:

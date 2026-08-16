@@ -23,9 +23,9 @@ from backend.api.upload import get_upload_router
 
 # Initialize FastAPI App
 app = FastAPI(
-    title="Neural Core Engine API",
-    version="0.4",
-    description="Production-ready Neural Core Engine with AI Agent Tool Calling (RAG & Safe Calculator), SQLite Session Storage, Conversational Memory, and SSE Streaming."
+    title="NuraVault API",
+    version="1.0.0",
+    description="NuraVault — AI Knowledge & Conversation Workspace API with RAG, Tool Calling, and Persistent Memory."
 )
 
 # CORS Configuration
@@ -48,10 +48,10 @@ agent = NeuralAgent(doc_manager=doc_manager)
 @app.on_event("startup")
 def startup_event():
     print("\n" + "="*60)
-    print("🚀 Initializing Neural Core Engine v0.4 (Agent & Tool Calling)...")
+    print("🚀 Initializing NuraVault Engine (Agent & Tool Calling)...")
     db_manager.init_db()
     doc_manager.initialize_and_sync()
-    print("✨ Neural Core Agent Ready with Tools:")
+    print("✨ NuraVault Agent Ready with Tools:")
     for tool_meta in agent.registry.get_tool_metadata():
         print(f"   • [{tool_meta['name']}] - {tool_meta['description']}")
     print("="*60 + "\n")
@@ -66,9 +66,9 @@ app.include_router(get_upload_router(doc_manager))
 @app.get("/")
 def read_root():
     return {
-        "message": "Neural Core v0.4 API is running.",
+        "message": "NuraVault API is running.",
         "status": "healthy",
-        "version": "0.4",
+        "version": "1.0.0",
         "documentation": "/docs"
     }
 
