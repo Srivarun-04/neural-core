@@ -46,6 +46,8 @@ class DocumentInfo(BaseModel):
     chunk_count: int
     file_size_bytes: int
     indexed_at: str
+    is_system: Optional[bool] = False
+    source_type: Optional[str] = "user"
 
 class SystemStatsResponse(BaseModel):
     document_count: int

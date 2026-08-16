@@ -16,10 +16,12 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 VECTORSTORE_DIR = os.path.join(BASE_DIR, "vectorstore")
 MANIFEST_PATH = os.path.join(VECTORSTORE_DIR, "manifest.json")
 SQLITE_DB_PATH = os.path.join(VECTORSTORE_DIR, "brain_memory.db")
+SYSTEM_KNOWLEDGE_PATH = os.path.join(BASE_DIR, "backend", "knowledge", "system_knowledge.md")
 
 # Ensure required directories exist
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(VECTORSTORE_DIR, exist_ok=True)
+os.makedirs(os.path.dirname(SYSTEM_KNOWLEDGE_PATH), exist_ok=True)
 
 # CORS Settings for Production Deployment
 CORS_ORIGINS_RAW = os.getenv("CORS_ORIGINS", "*")

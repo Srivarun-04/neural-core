@@ -20,9 +20,15 @@ def get_documents_router(doc_manager: DocumentManager):
     @router.delete("/documents/{filename}")
     def delete_document(filename: str):
         """
-        Permanently deletes a document from data/, removes manifest record,
-        and synchronizes/rebuilds the FAISS vector index.
+        Permanently deletes a user document from data/, removes manifest record,
+        and synchronizes/rebuilds the FAISS vector index. Rejects deletion of system knowledge.
         """
+        if doc_manager.is_system_document(filename):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Deletion rejected: '{filename}' is protected canonical system knowledge."
+            )
+
         success = doc_manager.delete_document(filename)
         if not success:
             raise HTTPException(

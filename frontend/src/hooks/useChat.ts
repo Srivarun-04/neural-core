@@ -7,7 +7,7 @@ export function useChat() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isThinking, setIsThinking] = useState<boolean>(false);
-  const [statusMessage, setStatusMessage] = useState<string>('Neural Core is thinking...');
+  const [statusMessage, setStatusMessage] = useState<string>('NuraVault is thinking...');
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
 
   // 1. Initial Load of Sessions from SQLite Backend
@@ -137,7 +137,7 @@ export function useChat() {
       return c;
     }));
 
-    setStatusMessage('Neural Core is thinking...');
+    setStatusMessage('NuraVault is thinking...');
     setIsThinking(true);
     setLoading(true);
 
@@ -180,7 +180,7 @@ export function useChat() {
       (doneData) => {
         setIsThinking(false);
         setLoading(false);
-        setStatusMessage('Neural Core is thinking...');
+        setStatusMessage('NuraVault is thinking...');
         setConversations(prev => prev.map(c => {
           if (c.id === targetChatId) {
             return {
@@ -200,7 +200,7 @@ export function useChat() {
         console.error('Streaming error:', error);
         setIsThinking(false);
         setLoading(false);
-        setStatusMessage('Neural Core is thinking...');
+        setStatusMessage('NuraVault is thinking...');
         setConversations(prev => prev.map(c => {
           if (c.id === targetChatId) {
             return {

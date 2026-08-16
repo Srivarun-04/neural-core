@@ -4,8 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neural Core - AI Operating System</title>
-    <meta name="description" content="Production RAG Knowledge Engine & Conversational AI System" />
+    <title>NuraVault — AI Knowledge &amp; Conversation Workspace</title>
+    <meta name="description" content="NuraVault — Your AI workspace for knowledge, memory, and intelligent conversations." />
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('nuravault_theme') || localStorage.getItem('theme');
+          var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+          if (theme === 'light') {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
