@@ -44,7 +44,7 @@ export function MessageInput({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex items-end gap-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] focus-within:border-sky-500/50 focus-within:ring-1 focus-within:ring-sky-500/20 rounded-2xl p-2 md:p-2.5 transition-all shadow-xs"
+      className="relative flex items-end gap-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] focus-within:border-sky-500/60 focus-within:ring-2 focus-within:ring-sky-500/20 rounded-2xl p-2 md:p-2.5 transition-all shadow-xs"
     >
       <textarea
         ref={textareaRef}
@@ -58,7 +58,7 @@ export function MessageInput({
       />
 
       <div className="flex items-center gap-1.5 pr-1 pb-1">
-        <span className="hidden sm:flex items-center gap-1 text-[10px] text-[var(--text-muted)] bg-[var(--bg-elevated)] px-2 py-1 rounded-md border border-[var(--border-subtle)] font-mono">
+        <span className="hidden sm:flex items-center gap-1 text-[10px] text-[var(--text-muted)] bg-[var(--bg-elevated)] px-2 py-1 rounded-lg border border-[var(--border-subtle)] font-mono select-none">
           <span>Enter</span>
           <CornerDownLeft className="w-2.5 h-2.5" />
         </span>

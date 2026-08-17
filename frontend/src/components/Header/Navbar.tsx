@@ -25,7 +25,7 @@ export function Navbar({
   onSearchChange,
 }: NavbarProps) {
   return (
-    <header className="h-16 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/90 backdrop-blur-md flex items-center justify-between px-4 md:px-6 z-10 w-full transition-colors">
+    <header className="h-16 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] flex items-center justify-between px-4 md:px-6 z-10 w-full transition-colors">
       {/* Left: Brand & View Switcher */}
       <div className="flex items-center gap-4 lg:gap-6">
         {/* Brand */}
@@ -36,7 +36,7 @@ export function Navbar({
               <span className="text-base font-bold tracking-tight text-[var(--text-primary)]">
                 NuraVault
               </span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
                 v1.0
               </span>
             </div>
@@ -65,13 +65,13 @@ export function Navbar({
         </div>
 
         {/* View Switcher Tabs (Desktop) */}
-        <nav className="hidden md:flex items-center gap-1 bg-[var(--bg-card)] p-1 border border-[var(--border-subtle)] rounded-xl">
+        <nav className="hidden md:flex items-center gap-1 bg-[var(--bg-elevated)]/60 p-1 border border-[var(--border-subtle)] rounded-xl">
           <button
             onClick={() => onViewChange('chat')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
               currentView === 'chat'
-                ? 'bg-sky-600 text-white shadow-md shadow-sky-600/20'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
+                ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white font-semibold shadow-md shadow-sky-600/20'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] font-medium'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -80,13 +80,13 @@ export function Navbar({
 
           <button
             onClick={() => onViewChange('knowledge')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
               currentView === 'knowledge'
-                ? 'bg-sky-600 text-white shadow-md shadow-sky-600/20'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
+                ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white font-semibold shadow-md shadow-sky-600/20'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] font-medium'
             }`}
           >
-            <Database className="w-3.5 h-3.5 text-sky-400" />
+            <Database className={`w-3.5 h-3.5 ${currentView === 'knowledge' ? 'text-white' : 'text-sky-600 dark:text-sky-400'}`} />
             <span>Knowledge Base</span>
           </button>
         </nav>
@@ -101,12 +101,12 @@ export function Navbar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search chats & docs..."
-            className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl pl-8 pr-7 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-sky-500/50 transition-all"
+            className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl pl-8 pr-7 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/20 transition-all shadow-2xs"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               <X className="w-3 h-3" />
             </button>
@@ -117,7 +117,7 @@ export function Navbar({
       {/* Right: Actions */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Mobile View Toggle */}
-        <div className="flex md:hidden items-center gap-1 bg-[var(--bg-card)] rounded-lg p-0.5 border border-[var(--border-subtle)]">
+        <div className="flex md:hidden items-center gap-1 bg-[var(--bg-elevated)] rounded-lg p-0.5 border border-[var(--border-subtle)]">
           <button
             onClick={() => onViewChange('chat')}
             className={`p-1.5 rounded-md text-xs font-medium transition-all ${
@@ -145,15 +145,15 @@ export function Navbar({
         </div>
 
         {/* Backend URL (Desktop) */}
-        <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-card)] rounded-xl border border-[var(--border-subtle)] text-xs text-[var(--text-muted)]">
-          <Globe className="w-3.5 h-3.5 text-sky-400" />
+        <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-card)] rounded-xl border border-[var(--border-subtle)] text-xs text-[var(--text-muted)] shadow-2xs">
+          <Globe className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
           <span className="truncate max-w-[160px] font-mono text-[11px]">{backendUrl}</span>
         </div>
 
         {/* Theme Toggle */}
         <button
           onClick={onToggleTheme}
-          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)] hover:bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-xl transition-all cursor-pointer"
+          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)] hover:bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-xl transition-all cursor-pointer shadow-2xs"
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
           aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
         >
@@ -167,7 +167,7 @@ export function Navbar({
         {/* Settings Button */}
         <button
           onClick={onSettingsClick}
-          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)] hover:bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-xl transition-all cursor-pointer"
+          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)] hover:bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-xl transition-all cursor-pointer shadow-2xs"
           title="Configure backend settings"
           aria-label="Configure backend settings"
         >

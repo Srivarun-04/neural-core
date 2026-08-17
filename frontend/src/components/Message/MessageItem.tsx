@@ -13,22 +13,22 @@ function getToolBadge(toolName: string) {
   const lower = toolName.toLowerCase();
   if (lower.includes('calc')) {
     return {
-      icon: <Calculator className="w-3 h-3 text-emerald-400" />,
+      icon: <Calculator className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />,
       label: 'Calculator',
-      color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+      color: 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
     };
   }
   if (lower.includes('knowledge') || lower.includes('rag') || lower.includes('document')) {
     return {
-      icon: <BookOpen className="w-3 h-3 text-sky-400" />,
+      icon: <BookOpen className="w-3 h-3 text-sky-600 dark:text-sky-400" />,
       label: 'Knowledge Vault',
-      color: 'bg-sky-500/10 border-sky-500/20 text-sky-400'
+      color: 'bg-sky-500/10 dark:bg-sky-500/15 border-sky-500/30 text-sky-700 dark:text-sky-400'
     };
   }
   return {
-    icon: <Wrench className="w-3 h-3 text-indigo-400" />,
+    icon: <Wrench className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />,
     label: toolName,
-    color: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
+    color: 'bg-indigo-500/10 dark:bg-indigo-500/15 border-indigo-500/30 text-indigo-700 dark:text-indigo-400'
   };
 }
 
@@ -60,26 +60,26 @@ export function MessageItem({ message }: MessageItemProps) {
     <div
       className={`group relative flex gap-3.5 md:gap-4 p-4 md:p-5 rounded-2xl border transition-all ${
         isUser
-          ? 'bg-sky-500/5 border-sky-500/15 ml-6 sm:ml-12'
+          ? 'bg-[var(--user-bubble-bg)] border-[var(--user-bubble-border)] ml-6 sm:ml-12 shadow-xs'
           : isError
-          ? 'bg-rose-950/20 border-rose-500/30 text-rose-200 mr-6 sm:mr-12'
-          : 'bg-[var(--bg-card)] border-[var(--border-subtle)] mr-4 sm:mr-12 shadow-xs'
+          ? 'bg-rose-500/10 dark:bg-rose-950/25 border-rose-500/30 text-rose-700 dark:text-rose-200 mr-6 sm:mr-12 shadow-xs'
+          : 'bg-[var(--ai-bubble-bg)] border-[var(--ai-bubble-border)] mr-4 sm:mr-12 shadow-xs'
       }`}
     >
       {/* Avatar Icon */}
       <div
         className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 shadow-xs ${
           isUser
-            ? 'bg-sky-600/15 border border-sky-500/30 text-sky-400'
+            ? 'bg-sky-500/15 border border-sky-500/30 text-sky-600 dark:text-sky-400'
             : isError
-            ? 'bg-rose-950/40 border border-rose-500/40 text-rose-400'
+            ? 'bg-rose-500/15 border border-rose-500/30 text-rose-500'
             : 'bg-[var(--bg-elevated)] border border-[var(--border-subtle)]'
         }`}
       >
         {isUser ? (
-          <User className="w-4 h-4 text-sky-500" />
+          <User className="w-4 h-4 text-sky-600 dark:text-sky-400" />
         ) : isError ? (
-          <AlertTriangle className="w-4.5 h-4.5 text-rose-400" />
+          <AlertTriangle className="w-4.5 h-4.5 text-rose-500" />
         ) : (
           <NuraVaultLogo size={20} showGlow={false} />
         )}
@@ -93,9 +93,9 @@ export function MessageItem({ message }: MessageItemProps) {
             <span
               className={`text-xs font-bold tracking-tight ${
                 isUser
-                  ? 'text-sky-500'
+                  ? 'text-sky-600 dark:text-sky-400'
                   : isError
-                  ? 'text-rose-400'
+                  ? 'text-rose-600 dark:text-rose-400'
                   : 'text-[var(--text-primary)]'
               }`}
             >
@@ -143,32 +143,32 @@ export function MessageItem({ message }: MessageItemProps) {
               <button
                 onClick={() => handleFeedback('like')}
                 type="button"
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
                   feedback === 'like'
-                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
                 }`}
                 title="Helpful response"
                 aria-label="Thumbs up"
               >
                 <ThumbsUp className="w-3.5 h-3.5" />
-                {feedback === 'like' && <span className="text-[10px] font-medium">Helpful</span>}
+                {feedback === 'like' && <span className="text-[10px] font-semibold">Helpful</span>}
               </button>
 
               {/* Thumbs Down */}
               <button
                 onClick={() => handleFeedback('dislike')}
                 type="button"
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
                   feedback === 'dislike'
-                    ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                    ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
                 }`}
                 title="Unhelpful response"
                 aria-label="Thumbs down"
               >
                 <ThumbsDown className="w-3.5 h-3.5" />
-                {feedback === 'dislike' && <span className="text-[10px] font-medium">Reported</span>}
+                {feedback === 'dislike' && <span className="text-[10px] font-semibold">Reported</span>}
               </button>
             </div>
 
@@ -182,8 +182,8 @@ export function MessageItem({ message }: MessageItemProps) {
             >
               {copiedMessage ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium">Copied ✓</span>
+                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Copied ✓</span>
                 </>
               ) : (
                 <>
@@ -199,7 +199,7 @@ export function MessageItem({ message }: MessageItemProps) {
         {!isUser && message.sources && message.sources.length > 0 && (
           <div className="mt-3.5 pt-3 border-t border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-secondary)] font-bold tracking-wider uppercase">
-              <BookOpen className="w-3.5 h-3.5 text-sky-400" />
+              <BookOpen className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
               <span>Knowledge Sources ({message.sources.length})</span>
             </div>
 
@@ -207,7 +207,7 @@ export function MessageItem({ message }: MessageItemProps) {
               {message.sources.map((src, idx) => (
                 <div
                   key={idx}
-                  className="p-3 bg-[var(--bg-elevated)]/60 border border-[var(--border-subtle)] hover:border-sky-500/30 rounded-xl flex flex-col justify-between gap-1.5 transition-all text-xs shadow-2xs"
+                  className="p-3 bg-[var(--bg-elevated)]/70 border border-[var(--border-subtle)] hover:border-sky-500/40 rounded-xl flex flex-col justify-between gap-1.5 transition-all text-xs shadow-2xs"
                 >
                   <div>
                     <div className="font-semibold text-[var(--text-primary)] flex items-center justify-between gap-2">
@@ -217,7 +217,7 @@ export function MessageItem({ message }: MessageItemProps) {
                           href={src.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[var(--text-muted)] hover:text-sky-400 transition-colors flex-shrink-0"
+                          className="text-[var(--text-muted)] hover:text-sky-600 dark:hover:text-sky-400 transition-colors flex-shrink-0"
                           aria-label="Open source link"
                         >
                           <ExternalLink className="w-3 h-3" />

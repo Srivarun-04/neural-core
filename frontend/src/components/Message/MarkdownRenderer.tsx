@@ -27,7 +27,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
             return (
               <code
-                className="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] font-mono text-xs text-sky-400 dark:text-sky-300 border border-[var(--border-subtle)] font-medium"
+                className="px-1.5 py-0.5 rounded-md bg-[var(--bg-elevated)] font-mono text-xs text-sky-600 dark:text-sky-300 border border-[var(--border-subtle)] font-medium"
                 {...props}
               >
                 {children}
@@ -57,14 +57,14 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           },
           blockquote({ children }) {
             return (
-              <blockquote className="border-l-2 border-sky-500 pl-3.5 my-2.5 text-[var(--text-secondary)] italic bg-[var(--bg-card)]/40 py-1 rounded-r-lg">
+              <blockquote className="border-l-3 border-sky-500 pl-3.5 my-2.5 text-[var(--text-secondary)] italic bg-[var(--bg-elevated)]/40 py-1.5 rounded-r-xl">
                 {children}
               </blockquote>
             );
           },
           table({ children }) {
             return (
-              <div className="overflow-x-auto my-3 rounded-xl border border-[var(--border-subtle)]">
+              <div className="overflow-x-auto my-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
                 <table className="w-full text-xs text-left text-[var(--text-primary)]">
                   {children}
                 </table>
@@ -75,10 +75,10 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             return <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase font-semibold text-[10px]">{children}</thead>;
           },
           th({ children }) {
-            return <th className="px-3 py-2 border-b border-[var(--border-subtle)]">{children}</th>;
+            return <th className="px-3.5 py-2.5 border-b border-[var(--border-subtle)] font-bold">{children}</th>;
           },
           td({ children }) {
-            return <td className="px-3 py-2 border-b border-[var(--border-subtle)]">{children}</td>;
+            return <td className="px-3.5 py-2.5 border-b border-[var(--border-subtle)]">{children}</td>;
           },
           a({ href, children }) {
             return (
@@ -86,7 +86,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sky-500 hover:text-sky-400 underline underline-offset-2 transition-colors font-medium"
+                className="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 underline underline-offset-2 transition-colors font-medium"
               >
                 {children}
               </a>

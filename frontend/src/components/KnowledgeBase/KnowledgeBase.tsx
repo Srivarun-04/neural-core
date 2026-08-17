@@ -272,12 +272,12 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
 
         {/* System Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group hover:border-sky-500/30 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 Indexed Documents
               </span>
-              <div className="p-2 bg-sky-500/10 text-sky-500 rounded-xl">
+              <div className="p-2 bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded-xl">
                 <FileText className="w-4 h-4" />
               </div>
             </div>
@@ -285,18 +285,18 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
               <span className="text-2xl md:text-3xl font-extrabold text-[var(--text-primary)]">
                 {loading ? '...' : stats?.document_count ?? 0}
               </span>
-              <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">
+              <span className="text-[11px] text-[var(--text-muted)] block mt-0.5 font-medium">
                 Stored in NuraVault
               </span>
             </div>
           </div>
 
-          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group hover:border-blue-500/30 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 Embedded Vectors
               </span>
-              <div className="p-2 bg-blue-500/10 text-blue-500 rounded-xl">
+              <div className="p-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl">
                 <Layers className="w-4 h-4" />
               </div>
             </div>
@@ -304,48 +304,48 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
               <span className="text-2xl md:text-3xl font-extrabold text-[var(--text-primary)]">
                 {loading ? '...' : stats?.total_chunks ?? 0}
               </span>
-              <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">
+              <span className="text-[11px] text-[var(--text-muted)] block mt-0.5 font-medium">
                 FAISS Vector Chunks
               </span>
             </div>
           </div>
 
-          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group hover:border-emerald-500/30 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 Embedding Model
               </span>
-              <div className="p-2 bg-emerald-500/10 text-emerald-500 rounded-xl">
+              <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl">
                 <Cpu className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3">
               <span
-                className="text-xs sm:text-sm font-semibold text-[var(--text-primary)] block truncate"
+                className="text-xs sm:text-sm font-bold text-[var(--text-primary)] block truncate"
                 title={stats?.embedding_model}
               >
                 {loading ? '...' : stats?.embedding_model || 'sentence-transformers'}
               </span>
-              <span className="text-[11px] text-emerald-600 dark:text-emerald-400 block mt-0.5 font-medium">
+              <span className="text-[11px] text-emerald-600 dark:text-emerald-400 block mt-0.5 font-semibold">
                 384-Dim Dense Embeddings
               </span>
             </div>
           </div>
 
-          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 shadow-xs relative overflow-hidden group hover:border-cyan-500/30 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 Vector Store
               </span>
-              <div className="p-2 bg-cyan-500/10 text-cyan-500 rounded-xl">
+              <div className="p-2 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 rounded-xl">
                 <HardDrive className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-xs sm:text-sm font-semibold text-[var(--text-primary)] block">
+              <span className="text-xs sm:text-sm font-bold text-[var(--text-primary)] block">
                 {loading ? '...' : stats?.vector_store_status || 'Active'}
               </span>
-              <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">
+              <span className="text-[11px] text-[var(--text-muted)] block mt-0.5 font-medium">
                 Disk-Persisted Index
               </span>
             </div>
@@ -355,16 +355,16 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
         {/* SECTION 1: NuraVault System Knowledge (Built-In & Protected) */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-sky-500" />
+            <Sparkles className="w-4 h-4 text-sky-600 dark:text-sky-400" />
             <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
               NuraVault System Knowledge
             </h3>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[var(--bg-card)] border border-sky-500/20 shadow-xs relative overflow-hidden">
+          <div className="p-5 rounded-2xl bg-[var(--bg-card)] border border-sky-500/25 shadow-xs relative overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start sm:items-center gap-3.5">
-                <div className="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-500 flex-shrink-0">
+                <div className="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 flex-shrink-0">
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>
@@ -391,7 +391,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
                   </div>
                   <div>
                     <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block">Format</span>
-                    <span className="font-semibold text-sky-500 uppercase">Markdown</span>
+                    <span className="font-semibold text-sky-600 dark:text-sky-400 uppercase">Markdown</span>
                   </div>
                 </div>
               )}
@@ -403,7 +403,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
         <div className="space-y-4 pt-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-sky-500" />
+              <BookOpen className="w-4 h-4 text-sky-600 dark:text-sky-400" />
               <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
                 Your Documents
               </h3>
@@ -413,7 +413,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
             </span>
           </div>
 
-          {/* Unified Clickable Drag & Drop Upload Zone (No inner redundant button) */}
+          {/* Unified Clickable Drag & Drop Upload Zone */}
           <div
             onClick={triggerFileInput}
             onDragOver={(e) => {
@@ -424,10 +424,10 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
             onDrop={handleDrop}
             className={`p-8 md:p-10 rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center text-center gap-3 cursor-pointer shadow-2xs ${isDragging
                 ? 'border-sky-500 bg-sky-500/10'
-                : 'border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-sky-500/40 hover:bg-[var(--bg-elevated)]/50'
+                : 'border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-sky-500/50 hover:bg-[var(--bg-elevated)]/50'
               }`}
           >
-            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-500">
+            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div className="space-y-1">
@@ -435,7 +435,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
                 Upload your knowledge
               </h4>
               <p className="text-xs text-[var(--text-secondary)]">
-                Drag &amp; drop documents here or <span className="text-sky-500 font-semibold underline underline-offset-2">click anywhere in this area</span>
+                Drag &amp; drop documents here or <span className="text-sky-600 dark:text-sky-400 font-semibold underline underline-offset-2">click anywhere in this area</span>
               </p>
               <p className="text-[11px] text-[var(--text-muted)] pt-0.5">
                 PDF • TXT • DOCX • Markdown — Up to 25MB
@@ -447,7 +447,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
           <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-5 md:p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Server className="w-4 h-4 text-sky-500" />
+                <Server className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                 <span>Uploaded Documents Manifest</span>
               </h4>
             </div>
@@ -463,7 +463,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs sm:text-sm text-[var(--text-secondary)]">
-                  <thead className="text-[10px] sm:text-xs uppercase bg-[var(--bg-elevated)] text-[var(--text-muted)] border-b border-[var(--border-subtle)]">
+                  <thead className="text-[10px] sm:text-xs uppercase bg-[var(--bg-elevated)] text-[var(--text-muted)] border-b border-[var(--border-subtle)] font-bold">
                     <tr>
                       <th className="py-2.5 px-3 md:px-4">Filename</th>
                       <th className="py-2.5 px-3 md:px-4">Format</th>
@@ -477,18 +477,18 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
                     {userDocuments.map((doc, idx) => (
                       <tr key={idx} className="hover:bg-[var(--bg-elevated)]/50 transition-colors">
                         <td className="py-3 px-3 md:px-4 font-medium text-[var(--text-primary)] flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-sky-500 flex-shrink-0" />
+                          <FileText className="w-4 h-4 text-sky-600 dark:text-sky-400 flex-shrink-0" />
                           <span className="truncate max-w-[140px] sm:max-w-xs">{doc.filename}</span>
                         </td>
                         <td className="py-3 px-3 md:px-4">
-                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-sky-500/10 text-sky-500 uppercase border border-sky-500/20">
+                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-sky-500/10 text-sky-600 dark:text-sky-400 uppercase border border-sky-500/20">
                             {doc.document_type}
                           </span>
                         </td>
                         <td className="py-3 px-3 md:px-4 font-semibold text-[var(--text-primary)]">
                           {doc.chunk_count}
                         </td>
-                        <td className="py-3 px-3 md:px-4 text-[var(--text-muted)]">
+                        <td className="py-3 px-3 md:px-4 text-[var(--text-muted)] font-medium">
                           {formatBytes(doc.file_size_bytes)}
                         </td>
                         <td className="py-3 px-3 md:px-4 text-[var(--text-muted)] text-xs hidden sm:table-cell">
@@ -500,7 +500,7 @@ export function KnowledgeBase({ backendUrl }: KnowledgeBaseProps) {
                             disabled={deletingFile === doc.filename}
                             title={`Permanently delete ${doc.filename}`}
                             aria-label={`Permanently delete ${doc.filename}`}
-                            className="p-1.5 text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                            className="p-1.5 text-[var(--text-muted)] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                           >
                             {deletingFile === doc.filename ? (
                               <Loader2 className="w-4 h-4 animate-spin text-rose-500" />

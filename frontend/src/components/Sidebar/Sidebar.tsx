@@ -113,29 +113,29 @@ export function Sidebar({
       <div className="px-3 py-1.5 space-y-1">
         <button
           onClick={() => onViewChange('chat')}
-          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
             currentView === 'chat'
-              ? 'bg-[var(--bg-card)] text-sky-400 font-semibold border border-sky-500/20'
-              : 'text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]'
+              ? 'bg-[var(--bg-card)] text-sky-600 dark:text-sky-400 font-semibold border border-sky-500/25 shadow-xs'
+              : 'text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] font-medium'
           }`}
         >
-          <MessageSquare className="w-4 h-4 text-sky-400" />
+          <MessageSquare className="w-4 h-4 text-sky-600 dark:text-sky-400" />
           <span>Chat Workspace</span>
         </button>
 
         <button
           onClick={() => onViewChange('knowledge')}
-          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
             currentView === 'knowledge'
-              ? 'bg-[var(--bg-card)] text-sky-400 font-semibold border border-sky-500/20'
-              : 'text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]'
+              ? 'bg-[var(--bg-card)] text-sky-600 dark:text-sky-400 font-semibold border border-sky-500/25 shadow-xs'
+              : 'text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] font-medium'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <Database className="w-4 h-4 text-sky-400" />
+            <Database className="w-4 h-4 text-sky-600 dark:text-sky-400" />
             <span>Knowledge Base</span>
           </div>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 font-semibold">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold border border-sky-500/20">
             Vault
           </span>
         </button>
@@ -156,12 +156,12 @@ export function Sidebar({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Filter chats..."
-              className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg pl-8 pr-7 py-1 text-[11px] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-sky-500/40"
+              className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg pl-8 pr-7 py-1 text-[11px] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/20 transition-all shadow-2xs"
             />
             {searchQuery && (
               <button
                 onClick={() => onSearchChange('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
               >
                 <X className="w-2.5 h-2.5" />
               </button>
@@ -199,14 +199,14 @@ export function Sidebar({
                 }}
                 className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[var(--bg-card)] text-[var(--text-primary)] font-medium border border-sky-500/30 shadow-xs'
+                    ? 'bg-[var(--bg-card)] text-[var(--text-primary)] font-semibold border border-sky-500/35 shadow-xs'
                     : 'text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <MessageSquare
                     className={`w-3.5 h-3.5 flex-shrink-0 ${
-                      isActive ? 'text-sky-400' : 'text-[var(--text-muted)]'
+                      isActive ? 'text-sky-600 dark:text-sky-400' : 'text-[var(--text-muted)]'
                     }`}
                   />
 
@@ -226,7 +226,7 @@ export function Sidebar({
                       <button
                         type="submit"
                         onClick={(e) => handleSaveRename(e, chat.id)}
-                        className="p-1 text-emerald-400 hover:text-emerald-300 cursor-pointer"
+                        className="p-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 cursor-pointer"
                         aria-label="Save title"
                       >
                         <Check className="w-3 h-3" />
@@ -249,7 +249,7 @@ export function Sidebar({
                   <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity">
                     <button
                       onClick={(e) => handleStartRename(e, chat)}
-                      className="p-1 text-[var(--text-muted)] hover:text-sky-400 rounded hover:bg-[var(--bg-elevated)] transition-all cursor-pointer"
+                      className="p-1 text-[var(--text-muted)] hover:text-sky-600 dark:hover:text-sky-400 rounded hover:bg-[var(--bg-elevated)] transition-all cursor-pointer"
                       title="Rename Chat"
                       aria-label="Rename Chat"
                     >
@@ -260,7 +260,7 @@ export function Sidebar({
                         e.stopPropagation();
                         onDeleteChat(chat.id);
                       }}
-                      className="p-1 text-[var(--text-muted)] hover:text-rose-400 rounded hover:bg-[var(--bg-elevated)] transition-all cursor-pointer"
+                      className="p-1 text-[var(--text-muted)] hover:text-rose-600 dark:hover:text-rose-400 rounded hover:bg-[var(--bg-elevated)] transition-all cursor-pointer"
                       title="Delete Chat"
                       aria-label="Delete Chat"
                     >
@@ -275,11 +275,11 @@ export function Sidebar({
       </div>
 
       {/* Sidebar Footer */}
-      <div className="p-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-[var(--text-muted)] bg-[var(--bg-card)]/50">
+      <div className="p-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-[var(--text-muted)] bg-[var(--bg-card)]/40">
         {onToggleTheme && (
           <button
             onClick={onToggleTheme}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-2xs"
             title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
           >
             {theme === 'dark' ? (
@@ -299,7 +299,7 @@ export function Sidebar({
         {onSettingsClick && (
           <button
             onClick={onSettingsClick}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-2xs"
             title="Backend Settings"
           >
             <Settings className="w-3.5 h-3.5" />

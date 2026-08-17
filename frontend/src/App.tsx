@@ -185,7 +185,7 @@ function App() {
 
       {/* Settings Modal Dialog */}
       {settingsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-2xl space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2.5">
@@ -194,7 +194,7 @@ function App() {
               </h3>
               <button
                 onClick={() => setSettingsOpen(false)}
-                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-card)] cursor-pointer"
+                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] cursor-pointer"
                 aria-label="Close settings"
               >
                 <X className="w-4 h-4" />
@@ -214,13 +214,13 @@ function App() {
                     onChange={(e) => setBackendUrl(e.target.value)}
                     placeholder="http://localhost:8000"
                     required
-                    className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-4 py-2.5 text-xs sm:text-sm text-[var(--text-primary)] focus:outline-none focus:border-sky-500/50"
+                    className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-4 py-2.5 text-xs sm:text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/20 shadow-2xs"
                   />
                 </div>
               </div>
 
-              <div className="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl flex gap-3 text-xs text-sky-400 leading-relaxed">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <div className="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl flex gap-3 text-xs text-sky-600 dark:text-sky-400 leading-relaxed">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-sky-500" />
                 <p>
                   Ensure your NuraVault FastAPI backend is running and CORS is enabled for frontend origins.
                 </p>
@@ -230,7 +230,7 @@ function App() {
                 <button
                   type="button"
                   onClick={() => setSettingsOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-xl transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
